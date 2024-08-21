@@ -8,6 +8,9 @@ def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
 def check_password(hashed_password, password):
+    # Ensure hashed_password is in bytes
+    if isinstance(hashed_password, str):
+        hashed_password = hashed_password.encode('utf-8')
     return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
 
 def login(username, password):
@@ -16,13 +19,12 @@ def login(username, password):
 
     if owner and check_password(owner.password, password):
         auth_token = encode_token(owner.id)
-
-        response = {
+        return {
             "status": "success",
             "message": "Successfully Logged In",
             "auth_token": auth_token
         }
-        return response
+    return None
 
 def save(owner_data):
     hashed_password = hash_password(owner_data['password'])

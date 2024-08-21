@@ -12,7 +12,7 @@ class Profile(Base):
     breed: Mapped[str] = mapped_column(db.String(100), nullable=False)
     weight: Mapped[str] = mapped_column(db.String(100), nullable=False)
     chip_number: Mapped[str] = mapped_column(db.String(25), nullable=False)
-    image_path: Mapped[str] = mapped_column(db.String(255), nullable=True)
+    image_path: Mapped[str] = mapped_column(db.String(500), nullable=True)
    
         
  

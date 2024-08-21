@@ -11,7 +11,7 @@ from models.profile import Profile
 from models.task import Task
 from routes.dogOwnerBP import dog_owner_blueprint
 from routes.profileBP import profile_blueprint
-from routes.taskBP import task_blueprint
+# from routes.taskBP import task_blueprint
 
 
 load_dotenv()
@@ -33,7 +33,7 @@ def create_app(config_name='DevelopmentConfig'):
 
     app.register_blueprint(dog_owner_blueprint, url_prefix='/owner')
     app.register_blueprint(profile_blueprint, url_prefix='/profile')
-    app.register_blueprint(task_blueprint, url_prefix='/task')
+    # app.register_blueprint(task_blueprint, url_prefix='/task')
     
     # blueprint_config(app)
 

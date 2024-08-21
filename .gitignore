@@ -1,1 +1,5 @@
-path/to/your-service-account-key.json
+# Byte-compiled
+__pycache__/
+*.py[cod]
+*.pyc
+*$py

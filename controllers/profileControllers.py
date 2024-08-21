@@ -5,11 +5,11 @@ from marshmallow import ValidationError
 
 def save():
     try: 
-        profile_data = profile_schema.load(request.form)
-        image_file = request.files.get('image')
+        profile_data = profile_schema.load(request.json)
+        # image_file = request.files.get('image')
     except ValidationError as e:
         return jsonify(e.messages), 400
-    profile_saved = profileService.save(profile_data, image_file)
+    profile_saved = profileService.save(profile_data)
     return profile_schema.jsonify(profile_data), 201
 
 
@@ -28,13 +28,13 @@ def find_by_id(profile_id):
 
 def update(profile_id):
     try:
-        profile_data = profile_schema.load(request.form, partial=True)
-        image_file = request.files.get('image')
+        profile_data = profile_schema.load(request.json, partial=True)
+        # image_file = request.files.get('image')
     except ValidationError as e:
         return jsonify(e.messages), 400
 
     try:
-        updated_profile = profileService.update(profile_id, profile_data, image_file)
+        updated_profile = profileService.update(profile_id, profile_data)
     except profileService.NoResultFound as e:
         return jsonify({'error': str(e)}), 404
 

@@ -2,13 +2,13 @@ from database import db
 from models.profile import Profile
 from sqlalchemy import select, update, delete
 from sqlalchemy.exc import NoResultFound
-from gcd_service import upload_image, delete_image
+# from gcd_service import upload_image, delete_image
 
-def save(profile_data, image_file=None):
+def save(profile_data):
     
-    if image_file:
-        image_path = upload_image(image_file, image_file.filename)
-        profile_data['image_path'] = image_path
+    # if image_file:
+    #     image_path = upload_image(image_file, image_file.filename)
+    #     profile_data['image_path'] = image_path
     
     new_profile = Profile(
         name=profile_data['name'],
@@ -18,6 +18,7 @@ def save(profile_data, image_file=None):
         breed=profile_data['breed'],
         weight=profile_data['weight'],
         chip_number=profile_data['chip_number'],
+        image_path=profile_data['image_path']
         )
     
     db.session.add(new_profile)
@@ -40,14 +41,14 @@ def find_by_id(profile_id):
     return result
 
 
-def update(profile_id, profile_data, image_file=None):
+def update(profile_id, profile_data):
     
     profile = find_by_id(profile_id)
-    if image_file:
-        if profile.image_path:
-            delete_image(profile.image_path.split('/')[-1])
-        image_path = upload_image(image_file, image_file.filename)
-        profile_data['image_path'] = image_path
+    # if image_file:
+    #     if profile.image_path:
+    #         delete_image(profile.image_path.split('/')[-1])
+    #     image_path = upload_image(image_file, image_file.filename)
+    #     profile_data['image_path'] = image_path
         
     query = update(Profile).where(Profile.id == profile_id).values(profile_data)
     result = db.session.execute(query)
@@ -60,8 +61,8 @@ def update(profile_id, profile_data, image_file=None):
 def delete(profile_id):
     
     profile = find_by_id(profile_id)
-    if profile.image_path:
-        delete_image(profile.image_path.split('/')[-1])
+    # if profile.image_path:
+    #     delete_image(profile.image_path.split('/')[-1])
         
     query = delete(Profile).where(Profile.id == profile_id)
     result = db.session.execute(query)
