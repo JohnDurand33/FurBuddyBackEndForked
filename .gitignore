@@ -1,1 +1,3 @@
 path/to/your-service-account-key.json
+.env
+venv/
