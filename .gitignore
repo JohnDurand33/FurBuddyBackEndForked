@@ -1,6 +1,6 @@
-path/to/your-service-account-key.json
 .env
-venv
-__pychache__/
+venv/
+__pycache__/
 __pycache__
-pycache
+*.pyc
+*$py
