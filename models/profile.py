@@ -1,6 +1,6 @@
 from database import db, Base
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Boolean, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Integer, ForeignKey
 
 class Profile(Base):
     __tablename__ = 'Profile'
@@ -13,6 +13,11 @@ class Profile(Base):
     weight: Mapped[str] = mapped_column(db.String(100), nullable=False)
     chip_number: Mapped[str] = mapped_column(db.String(25), nullable=False)
     image_path: Mapped[str] = mapped_column(db.String(500), nullable=True)
+    vet: Mapped[str] = mapped_column(db.String(100), nullable=False)
+    vet_contact: Mapped[str] = mapped_column(db.String(250), nullable=False)
+    
+    owner_id: Mapped[int] = mapped_column(Integer, ForeignKey('Owner.id'), nullable=False)
+    owner = relationship("DogOwner", back_populates="profiles")
    
         
  

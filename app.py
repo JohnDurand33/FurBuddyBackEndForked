@@ -8,7 +8,7 @@ from models.schemas import ma
 
 from models.dogOwner import DogOwner
 from models.profile import Profile
-from models.task import Task
+# from models.task import Task
 from routes.dogOwnerBP import dog_owner_blueprint
 from routes.profileBP import profile_blueprint
 # from routes.taskBP import task_blueprint

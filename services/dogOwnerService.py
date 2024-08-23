@@ -1,8 +1,11 @@
 import bcrypt
+from flask import request, jsonify
 from models.dogOwner import DogOwner
 from database import db
-from sqlalchemy import select
+from sqlalchemy import select, delete
+from sqlalchemy.exc import NoResultFound
 from utils.util import encode_token
+
 
 def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -26,6 +29,7 @@ def login(username, password):
         }
     return None
 
+
 def save(owner_data):
     hashed_password = hash_password(owner_data['password'])
     new_owner = DogOwner(
@@ -40,3 +44,23 @@ def save(owner_data):
 
     db.session.refresh(new_owner)
     return new_owner
+
+
+def update_owner(id, owner_data):
+    owner = db.session.query(DogOwner).filter(DogOwner.id == id).first()
+    if owner:
+        for key, value in owner_data.items():
+            setattr(owner, key, value)
+        db.session.commit()
+        db.session.refresh(owner)
+        return owner
+    else:
+        return None
+
+   
+def delete_owner(id):
+    query = delete(DogOwner).filter(DogOwner.id == id)
+    db.session.execute(query)
+    db.session.commit()
+    return {'message': 'Dog owner deleted successfully'}, 200
+   
