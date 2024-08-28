@@ -11,13 +11,12 @@ def hash_password(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
 def check_password(hashed_password, password):
-    # Ensure hashed_password is in bytes
     if isinstance(hashed_password, str):
         hashed_password = hashed_password.encode('utf-8')
     return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
 
-def login(username, password):
-    query = select(DogOwner).where(DogOwner.username == username)
+def login(owner_email, password):
+    query = select(DogOwner).where(DogOwner.owner_email == owner_email)
     owner = db.session.execute(query).scalar_one_or_none()
 
     if owner and check_password(owner.password, password):
@@ -33,7 +32,6 @@ def login(username, password):
 def save(owner_data):
     hashed_password = hash_password(owner_data['password'])
     new_owner = DogOwner(
-        username=owner_data['username'],
         password=hashed_password,
         owner_name=owner_data['owner_name'],
         owner_email=owner_data['owner_email'],

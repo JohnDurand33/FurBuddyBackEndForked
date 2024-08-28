@@ -29,8 +29,10 @@ def save(profile_data, owner_id):
         weight=profile_data['weight'],
         chip_number=profile_data['chip_number'],
         image_path=profile_data.get('image_path', None),
-        vet=profile_data['vet'],
-        vet_contact=profile_data['vet_contact'],
+        vet_clinic_name=profile_data['vet_clinic_name'],
+        vet_clinic_phone=profile_data['vet_clinic_phone'],
+        vet_clinic_email=profile_data['vet_clinic_email'],
+        vet_doctor_name=profile_data['vet_doctor_name'],
         owner_id=owner_id
         )
     

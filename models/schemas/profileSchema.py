@@ -11,14 +11,17 @@ class ProfileSchema(ma.Schema):
     weight = fields.String()
     chip_number = fields.String()
     image_path = fields.String()
-    vet = fields.String()
-    vet_contact = fields.String()
+    vet_clinic_name = fields.String()
+    vet_clinic_phone = fields.String()
+    vet_clinic_email = fields.String()
+    vet_doctor_name = fields.String()
   
     
     class Meta:
-        fields = ("id", "name", "age", "sex", "fixed", "breed", "weight", "chip_number", "image_path", "vet", "vet_contact")
+        fields = ("id", "name", "age", "sex", "fixed", "breed", "weight", "chip_number", "image_path", "vet_clinic_name", "vet_clinic_phone", "vet_clinic_email", "vet_doctor_name")
         
 profile_schema = ProfileSchema()
 profiles_schema = ProfileSchema(many=True)
     
-    
+
+

@@ -8,17 +8,17 @@ from marshmallow import ValidationError
 def login():
     try:
         credentials = request.json
-        username = credentials['username']
+        owner_email = credentials['owner_email']
         password = credentials['password']
         
-        token = dogOwnerService.login(username, password)
+        token = dogOwnerService.login(owner_email, password)
     except KeyError:
-        return jsonify({'messages': 'Invalid payload, expecting username and password'}), 401
+        return jsonify({'messages': 'Invalid payload, expecting user email and password'}), 401
     
     if token:
         return jsonify(token), 200
     else:
-        return jsonify({'messages': "Invalid username or password"}), 401
+        return jsonify({'messages': "Invalid user email or password"}), 401
     
     
 def save(): 
@@ -29,6 +29,7 @@ def save():
     
     owner_saved = dogOwnerService.save(owner_data)
     return dog_owner_schema.jsonify(owner_saved), 201
+
 
 def update_owner(id):
     try:
