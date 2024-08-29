@@ -1,9 +1,9 @@
 from flask import request, jsonify
 from models.schemas.dogOwnerSchema import dog_owner_schema
 from services import dogOwnerService
-from services.dogOwnerService import update_owner, delete_owner
+from services.dogOwnerService import update_owner_info, delete_owner_from_db
 from marshmallow import ValidationError
-from utils.util import handle_options
+from utils.util import token_required, handle_options
 
 @handle_options
 def login():
@@ -34,31 +34,38 @@ def save():
         owner_saved = dogOwnerService.save(owner_data)
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-    return dog_owner_schema.jsonify(owner_saved), 201
+    
+    response = {
+        "message": "Account was successfully created",
+        "owner": dog_owner_schema.dump(owner_saved)
+    }
+    return jsonify(response), 201
 
 
 @handle_options
-def update_owner(id):
+@token_required
+def update_owner(current_owner_id, id):
+    if current_owner_id != id:
+        return jsonify({"message": "Unauthorized access"}), 403
     try:
         owner_data = request.json
-        updated_owner = dogOwnerService.update_owner(id, owner_data)
-        if updated_owner:
-            return dog_owner_schema.jsonify(updated_owner), 200
-        else:
-            return jsonify({"message": "Dog owner not found"}), 404
+        response, status_code = update_owner_info(id, owner_data)
+        return jsonify(response), status_code
     except ValidationError as e:
         return jsonify(e.messages), 400
-    
+
     
     
 @handle_options
-def delete_owner(id):
-    try:
-        success = dogOwnerService.delete_owner(id)
-        if success:
-            return jsonify({"message": "Dog owner removed successfully"}), 200
-        else:
-            return jsonify({"message": "Dog owner not found"}), 404
-    except ValidationError as e:
-        return jsonify(e.messages), 400
+@token_required
+def delete_owner(current_owner_id, id):
+    if current_owner_id != id:
+        return jsonify({"message": "Unauthorized access"}), 403
+
+    response, status_code = delete_owner_from_db(id)
+    if status_code == 404:
+        return jsonify(response), 404
+    return jsonify(response), status_code
+
+
 

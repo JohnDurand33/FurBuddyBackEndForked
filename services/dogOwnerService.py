@@ -1,10 +1,12 @@
 import bcrypt
 from flask import request, jsonify
 from models.dogOwner import DogOwner
+from models.schemas.dogOwnerSchema import dog_owner_schema 
 from database import db
 from sqlalchemy import select, delete
-from utils.util import encode_token, token_required
+from utils.util import encode_token
 from utils.util import handle_options
+from sqlalchemy.exc import SQLAlchemyError
 
 
 def hash_password(password):
@@ -31,14 +33,13 @@ def login(owner_email, password):
     return None
 
 
-
 def save(owner_data):
     hashed_password = hash_password(owner_data['password'])
     new_owner = DogOwner(
         password=hashed_password,
-        owner_name=owner_data['owner_name'],
         owner_email=owner_data['owner_email'],
-        owner_phone=owner_data['owner_phone']
+        owner_name=owner_data.get('owner_name'),
+        owner_phone=owner_data.get('owner_phone')
     )
     db.session.add(new_owner)
     db.session.commit()
@@ -47,25 +48,33 @@ def save(owner_data):
     return new_owner
 
 
+def update_owner_info(id, owner_data):
+    try:
+        owner = db.session.query(DogOwner).filter(DogOwner.id == id).first()
+        if owner:
+            for key, value in owner_data.items():
+                setattr(owner, key, value)
+            db.session.commit()
+            db.session.refresh(owner)
+            return {
+                "message": "Account information was successfully updated",
+                "owner": dog_owner_schema.dump(owner)  
+            }, 200
+        else:
+            return {"message": "Owner not found"}, 404
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return {"message": str(e)}, 500
 
-@token_required
-def update_owner(current_owner_id, owner_data):
-    owner = db.session.query(DogOwner).filter(DogOwner.id == current_owner_id).first()
-    if owner:
-        for key, value in owner_data.items():
-            setattr(owner, key, value)
+
+def delete_owner_from_db(id):
+    try:
+        query = delete(DogOwner).filter(DogOwner.id == id)
+        result = db.session.execute(query)
         db.session.commit()
-        db.session.refresh(owner)
-        return owner
-    else:
-        return None
-
-
-   
-@token_required
-def delete_owner(current_owner_id):
-    query = delete(DogOwner).filter(DogOwner.id == current_owner_id)
-    db.session.execute(query)
-    db.session.commit()
-    return {'message': 'Dog owner deleted successfully'}, 200
-   
+        if result.rowcount == 0:
+            return {"message": "Owner not found"}, 404
+        return {'message': 'Owner deleted successfully'}, 200
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return {"message": str(e)}, 500

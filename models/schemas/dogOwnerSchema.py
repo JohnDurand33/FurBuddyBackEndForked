@@ -2,7 +2,7 @@ from models.schemas import ma
 from marshmallow import fields
 
 class DogOwnerSchema(ma.Schema):
-    id = fields.Integer(required=True)
+    id = fields.Integer(required=False)
     password = fields.String(required=True)
     owner_name = fields.String()
     owner_email = fields.String(required=True)
