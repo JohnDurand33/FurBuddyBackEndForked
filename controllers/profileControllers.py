@@ -6,6 +6,7 @@ from services import dogOwnerService
 from services.profileService import get_profile_with_owner
 from marshmallow import ValidationError
 from sqlalchemy.orm.exc import NoResultFound
+from utils.util import handle_options
 
 def save(owner_id):
     try: 

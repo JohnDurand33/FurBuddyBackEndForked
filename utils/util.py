@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from secrets import token_bytes
 import jwt
-from flask import jsonify, request 
+from flask import jsonify, request, make_response
 from functools import wraps 
 
 SECRET_KEY = "super_secret_secrets"
@@ -37,3 +37,23 @@ def token_required(func):
         return jsonify({"message": "Token is missing"}), 401
     
     return wrapper
+
+
+def handle_options(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if request.method == 'OPTIONS':
+            return jsonify({'message': 'CORS preflight request'}), 200
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+# def handle_options(f):
+#     @wraps(f)
+#     def decorated_function(*args, **kwargs):
+#         if request.method == 'OPTIONS':
+#             response = make_response()
+#             response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
+#             response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS, HEAD'
+#             response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With'
+#             return response, 200

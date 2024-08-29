@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from flask import Flask
+from flask_cors import CORS 
 from flask_mail import Mail
 from config import DevelopmentConfig
 from database import db
@@ -30,6 +31,8 @@ def create_app(config_name='DevelopmentConfig'):
     
 # blueprint_config(app)
 # def blueprint_config(app):
+
+    CORS(app)
 
     app.register_blueprint(dog_owner_blueprint, url_prefix='/owner')
     app.register_blueprint(profile_blueprint, url_prefix='/profile')

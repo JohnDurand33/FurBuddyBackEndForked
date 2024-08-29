@@ -4,6 +4,7 @@ from models.dogOwner import DogOwner
 from database import db
 from sqlalchemy import select, delete
 from utils.util import encode_token, token_required
+from utils.util import handle_options
 
 
 def hash_password(password):
@@ -13,6 +14,8 @@ def check_password(hashed_password, password):
     if isinstance(hashed_password, str):
         hashed_password = hashed_password.encode('utf-8')
     return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
+
+
 
 def login(owner_email, password):
     query = select(DogOwner).where(DogOwner.owner_email == owner_email)
@@ -26,6 +29,7 @@ def login(owner_email, password):
             "auth_token": auth_token
         }
     return None
+
 
 
 def save(owner_data):
@@ -43,6 +47,7 @@ def save(owner_data):
     return new_owner
 
 
+
 @token_required
 def update_owner(current_owner_id, owner_data):
     owner = db.session.query(DogOwner).filter(DogOwner.id == current_owner_id).first()
@@ -54,6 +59,7 @@ def update_owner(current_owner_id, owner_data):
         return owner
     else:
         return None
+
 
    
 @token_required

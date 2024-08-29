@@ -7,6 +7,7 @@ from sqlalchemy import select, delete
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 from utils.util import token_required
+from utils.util import handle_options
 
 
 def calculate_age(date_of_birth):
@@ -23,14 +24,18 @@ def save(profile_data, owner_id):
     if not owner:
         raise ValueError(f"Owner with ID {owner_id} does not exist.")
     
-    date_of_birth = profile_data.get('date_of_birth')
-    if date_of_birth:
+    date_of_birth = profile_data.get('date_of_birth', None)
+    
+    if isinstance(date_of_birth, str):
         try:
             date_of_birth = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
         except ValueError:
             raise ValueError("Date of birth must be in YYYY-MM-DD format.")
-    else:
-        date_of_birth = None
+    elif date_of_birth is not None and not isinstance(date_of_birth, datetime.date):
+        raise ValueError("Date of birth must be a string or a date object.")
+    
+    age = calculate_age(date_of_birth)
+    profile_data['age'] = age
     
     new_profile = Profile(
         name=profile_data['name'],
@@ -58,6 +63,8 @@ def save(profile_data, owner_id):
             raise ValueError(f"Database Integrity Error: {e}")
         
         
+        
+   
 @token_required
 def get_profile_with_owner(profile_id, current_owner_id):
     
@@ -77,6 +84,7 @@ def get_profile_with_owner(profile_id, current_owner_id):
         'profile': profile_result,
         'owner': owner_result
     }
+    
 
 
 @token_required
@@ -84,6 +92,7 @@ def find_all(current_owner_id):
     query = select(Profile).where(Profile.owner_id == current_owner_id)
     all_profiles = db.session.execute(query).scalars().all()
     return all_profiles
+
 
 
 @token_required
@@ -101,6 +110,7 @@ def find_by_id(profile_id, current_owner_id):
         
         return profile_data
     
+
 
 @token_required
 def update_profile(profile_id, profile_data, current_owner_id):
@@ -122,6 +132,7 @@ def update_profile(profile_id, profile_data, current_owner_id):
         raise ValueError(f"Database Integrity Error: {e}")
   
   
+
 @token_required
 def delete_profile(profile_id, current_owner_id):
     query = select(Profile).where(Profile.id == profile_id, Profile.owner_id == current_owner_id)
