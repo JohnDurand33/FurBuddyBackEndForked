@@ -10,7 +10,6 @@ from sqlalchemy.orm.exc import NoResultFound
 def save(owner_id):
     try: 
         profile_data = profile_schema.load(request.json)
-        # image_file = request.files.get('image')
         profile_data['owner_id'] = owner_id 
     except ValidationError as e:
         return jsonify(e.messages), 400

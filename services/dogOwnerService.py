@@ -3,8 +3,7 @@ from flask import request, jsonify
 from models.dogOwner import DogOwner
 from database import db
 from sqlalchemy import select, delete
-from sqlalchemy.exc import NoResultFound
-from utils.util import encode_token
+from utils.util import encode_token, token_required
 
 
 def hash_password(password):
@@ -44,8 +43,9 @@ def save(owner_data):
     return new_owner
 
 
-def update_owner(id, owner_data):
-    owner = db.session.query(DogOwner).filter(DogOwner.id == id).first()
+@token_required
+def update_owner(current_owner_id, owner_data):
+    owner = db.session.query(DogOwner).filter(DogOwner.id == current_owner_id).first()
     if owner:
         for key, value in owner_data.items():
             setattr(owner, key, value)
@@ -56,8 +56,9 @@ def update_owner(id, owner_data):
         return None
 
    
-def delete_owner(id):
-    query = delete(DogOwner).filter(DogOwner.id == id)
+@token_required
+def delete_owner(current_owner_id):
+    query = delete(DogOwner).filter(DogOwner.id == current_owner_id)
     db.session.execute(query)
     db.session.commit()
     return {'message': 'Dog owner deleted successfully'}, 200

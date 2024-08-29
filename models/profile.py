@@ -1,4 +1,6 @@
 from database import db, Base
+from datetime import datetime
+from sqlalchemy import Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, ForeignKey
 
@@ -6,7 +8,7 @@ class Profile(Base):
     __tablename__ = 'Profile'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(db.String(100), nullable=False)
-    age: Mapped[int] = mapped_column(db.Integer, nullable=True)
+    date_of_birth: Mapped[datetime.date] = mapped_column(Date, nullable=True)
     sex: Mapped[str] = mapped_column(db.String(20), nullable=True)
     fixed: Mapped[bool] = mapped_column(db.Boolean, nullable=True)
     breed: Mapped[str] = mapped_column(db.String(100), nullable=True)

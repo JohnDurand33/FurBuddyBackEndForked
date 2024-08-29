@@ -4,7 +4,8 @@ from marshmallow import fields
 class ProfileSchema(ma.Schema):
     id = fields.Integer(required=True)
     name = fields.String(required=True)
-    age = fields.Integer()
+    date_of_birth = fields.Date(format='%Y-%m-%d', allow_none=True)
+    age = fields.Integer(dump_only=True)
     sex = fields.String()
     fixed = fields.Boolean()
     breed = fields.String()
@@ -18,7 +19,7 @@ class ProfileSchema(ma.Schema):
   
     
     class Meta:
-        fields = ("id", "name", "age", "sex", "fixed", "breed", "weight", "chip_number", "image_path", "vet_clinic_name", "vet_clinic_phone", "vet_clinic_email", "vet_doctor_name")
+        fields = ("id", "name", "date_of_birth", "age", "sex", "fixed", "breed", "weight", "chip_number", "image_path", "vet_clinic_name", "vet_clinic_phone", "vet_clinic_email", "vet_doctor_name")
         
 profile_schema = ProfileSchema()
 profiles_schema = ProfileSchema(many=True)
