@@ -1,5 +1,5 @@
 from database import db
-from datetime import datetime
+from datetime import datetime, date
 from models.profile import Profile
 from models.dogOwner import DogOwner
 from models.schemas.profileSchema import profile_schema  
@@ -14,6 +14,8 @@ def calculate_age(date_of_birth):
     if date_of_birth is None:
         return None
     today = datetime.today().date()
+    if isinstance(date_of_birth, datetime):
+        date_of_birth = date_of_birth.date()
     age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
     return age
 
@@ -31,7 +33,7 @@ def save(profile_data, owner_id):
             date_of_birth = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
         except ValueError:
             raise ValueError("Date of birth must be in YYYY-MM-DD format.")
-    elif date_of_birth is not None and not isinstance(date_of_birth, datetime.date):
+    elif date_of_birth is not None and not isinstance(date_of_birth, (date, datetime)):
         raise ValueError("Date of birth must be a string or a date object.")
     
     age = calculate_age(date_of_birth)
@@ -64,94 +66,77 @@ def save(profile_data, owner_id):
         
         
         
-   
-@token_required
-def get_profile_with_owner(profile_id, current_owner_id):
-    
-    profile_query = select(Profile).where(Profile.id == profile_id, Profile.owner_id == current_owner_id)
-    profile_result = db.session.execute(profile_query).scalars().one_or_none()
-    
-    if profile_result is None:
-        raise NoResultFound(f'Profile with ID {profile_id} not found or you do not own this profile.')
-
-    owner_query = select(DogOwner).where(DogOwner.id == current_owner_id)
-    owner_result = db.session.execute(owner_query).scalars().one_or_none()
-    
-    if owner_result is None:
-        raise NoResultFound(f'Owner with ID {current_owner_id} not found.')
-
-    return {
-        'profile': profile_result,
-        'owner': owner_result
-    }
-    
-
-
-@token_required
-def find_all(current_owner_id):
-    query = select(Profile).where(Profile.owner_id == current_owner_id)
-    all_profiles = db.session.execute(query).scalars().all()
-    return all_profiles
-
-
-
-@token_required
-def find_by_id(profile_id, current_owner_id):
-        query = select(Profile).where(Profile.id == profile_id, Profile.owner_id == current_owner_id)
-        result = db.session.execute(query).scalars().one_or_none()
+def find_profile_by_id(profile_id):
+    profile = db.session.get(Profile, profile_id)
+    if not profile:
+        raise ValueError(f"Profile with ID {profile_id} does not exist.")
+    return profile
         
-        if result is None:
-            raise NoResultFound(f'Profile with ID {profile_id} not found or you do not own this profile.')
-       
-        age = calculate_age(result.date_of_birth)
         
-        profile_data = profile_schema.dump(result)
-        profile_data['age'] = age
-        
-        return profile_data
-    
 
-
-@token_required
-def update_profile(profile_id, profile_data, current_owner_id):
+def update_profile(profile_id, profile_data):
+    profile = db.session.get(Profile, profile_id)
+    if not profile:
+        raise ValueError(f"Profile with ID {profile_id} does not exist.")
     
-    query = select(Profile).where(Profile.id == profile_id, Profile.owner_id == current_owner_id)
-    result = db.session.execute(query).scalars().one_or_none()
-    
-    if result is None:
-        raise NoResultFound(f'Profile with ID {profile_id} not found or you do not own this profile.')
-
     for key, value in profile_data.items():
-        setattr(result, key, value)
+        setattr(profile, key, value)
     
     try:
         db.session.commit()
-        return result
+        db.session.refresh(profile)
+        return profile
     except IntegrityError as e:
         db.session.rollback()
         raise ValueError(f"Database Integrity Error: {e}")
-  
-  
-
-@token_required
-def delete_profile(profile_id, current_owner_id):
-    query = select(Profile).where(Profile.id == profile_id, Profile.owner_id == current_owner_id)
-    profile = db.session.execute(query).scalars().one_or_none()
-    
-    if profile is None:
-        raise NoResultFound(f'Profile with ID {profile_id} not found or you do not own this profile.')
-
-    query = delete(Profile).where(Profile.id == profile_id)
-    result = db.session.execute(query)
+     
+     
+     
+def delete_profile(profile_id):
+    profile = db.session.get(Profile, profile_id)
+    if not profile:
+        raise ValueError(f"Profile with ID {profile_id} does not exist.")
     
     try:
+        db.session.delete(profile)
         db.session.commit()
-        if result.rowcount == 0:
-            raise NoResultFound(f'Profile with ID {profile_id} not found.')
+        return True
     except IntegrityError as e:
         db.session.rollback()
         raise ValueError(f"Database Integrity Error: {e}")
+
+
+
+# def get_profile_with_owner(profile_id, current_owner_id):
     
-    return {"status": "success", "message": "Profile deleted successfully"}
+#     profile_query = select(Profile).where(Profile.id == profile_id, Profile.owner_id == current_owner_id)
+#     profile_result = db.session.execute(profile_query).scalars().one_or_none()
     
+#     if profile_result is None:
+#         raise NoResultFound(f'Profile with ID {profile_id} not found or you do not own this profile.')
+
+#     owner_query = select(DogOwner).where(DogOwner.id == current_owner_id)
+#     owner_result = db.session.execute(owner_query).scalars().one_or_none()
+    
+#     if owner_result is None:
+#         raise NoResultFound(f'Owner with ID {current_owner_id} not found.')
+
+#     return {
+#         'profile': profile_result,
+#         'owner': owner_result
+#     }
+    
+
+
+# def find_all_profiles(owner_id):
+#     try:
+#         profiles = Profile.query.filter_by(owner_id=owner_id).all()
+#         return profiles
+#     except Exception as e:
+#         raise ValueError(f"Error retrieving profiles: {str(e)}")
+
+
+
+
+
  
