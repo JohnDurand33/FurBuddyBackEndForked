@@ -2,7 +2,7 @@ from models.schemas import ma
 from marshmallow import fields
 
 class ProfileSchema(ma.Schema):
-    id = fields.Integer(required=True)
+    id = fields.Integer(required=False)
     name = fields.String(required=True)
     date_of_birth = fields.Date(format='%Y-%m-%d', allow_none=True)
     age = fields.Integer(dump_only=True)

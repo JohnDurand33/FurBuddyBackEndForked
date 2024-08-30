@@ -48,12 +48,3 @@ def handle_options(f):
     return decorated_function
 
 
-# def handle_options(f):
-#     @wraps(f)
-#     def decorated_function(*args, **kwargs):
-#         if request.method == 'OPTIONS':
-#             response = make_response()
-#             response.headers['Access-Control-Allow-Origin'] = 'http://localhost:5173'
-#             response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS, HEAD'
-#             response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With'
-#             return response, 200
