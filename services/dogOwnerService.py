@@ -48,6 +48,16 @@ def save(owner_data):
     return new_owner
 
 
+def show_info(owner_id):
+        try:
+            owner = DogOwner.query.get(owner_id)
+            if not owner:
+                raise ValueError("Owner not found")
+            return owner
+        except Exception as e:
+            raise ValueError(f"Error retrieving owner: {str(e)}")
+
+
 def update_owner_info(id, owner_data):
     try:
         owner = db.session.query(DogOwner).filter(DogOwner.id == id).first()

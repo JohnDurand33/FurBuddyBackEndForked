@@ -1,8 +1,10 @@
 from database import db, Base
+from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy import Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, ForeignKey
+
 
 class Profile(Base):
     __tablename__ = 'Profile'

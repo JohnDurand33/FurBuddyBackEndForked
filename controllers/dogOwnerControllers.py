@@ -2,8 +2,10 @@ from flask import request, jsonify
 from models.schemas.dogOwnerSchema import dog_owner_schema
 from services import dogOwnerService
 from services.dogOwnerService import update_owner_info, delete_owner_from_db
+from services.dogOwnerService import show_info
 from marshmallow import ValidationError
 from utils.util import token_required, handle_options
+import logging
 
 @handle_options
 def login():
@@ -40,6 +42,27 @@ def save():
         "owner": dog_owner_schema.dump(owner_saved)
     }
     return jsonify(response), 201
+
+
+@handle_options
+@token_required
+def show_owner_info(current_owner_id):
+    try:
+        owner = dogOwnerService.show_info(current_owner_id)
+        if owner is None:
+            return jsonify({"message": "Owner not found"}), 404
+        
+        response = {
+            "owner_email": owner.owner_email,
+            "owner_name": owner.owner_name,
+            "owner_phone": owner.owner_phone
+        }
+        return jsonify(response), 200
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 
 
 @handle_options

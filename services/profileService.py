@@ -48,10 +48,10 @@ def save(profile_data, owner_id):
         weight=profile_data['weight'],
         chip_number=profile_data['chip_number'],
         image_path=profile_data.get('image_path', None),
-        vet_clinic_name=profile_data['vet_clinic_name'],
-        vet_clinic_phone=profile_data['vet_clinic_phone'],
-        vet_clinic_email=profile_data['vet_clinic_email'],
-        vet_doctor_name=profile_data['vet_doctor_name'],
+        vet_clinic_name=profile_data['vet_clinic_name', None],
+        vet_clinic_phone=profile_data['vet_clinic_phone', None],
+        vet_clinic_email=profile_data['vet_clinic_email', None],
+        vet_doctor_name=profile_data['vet_doctor_name', None],
         owner_id=owner_id
         )
     
@@ -72,6 +72,17 @@ def find_profile_by_id(profile_id):
         raise ValueError(f"Profile with ID {profile_id} does not exist.")
     return profile
         
+        
+def find_all_profiles(owner_id):
+    
+    try:
+        profiles = Profile.query.filter_by(owner_id).all()
+        if not profiles:
+            raise ValueError("No profiles found for the given owner.")
+        return profiles
+    except Exception as e:
+        raise ValueError(f"Error retrieving profiles: {str(e)}")
+
         
 
 def update_profile(profile_id, profile_data):
@@ -107,33 +118,7 @@ def delete_profile(profile_id):
 
 
 
-# def get_profile_with_owner(profile_id, current_owner_id):
-    
-#     profile_query = select(Profile).where(Profile.id == profile_id, Profile.owner_id == current_owner_id)
-#     profile_result = db.session.execute(profile_query).scalars().one_or_none()
-    
-#     if profile_result is None:
-#         raise NoResultFound(f'Profile with ID {profile_id} not found or you do not own this profile.')
 
-#     owner_query = select(DogOwner).where(DogOwner.id == current_owner_id)
-#     owner_result = db.session.execute(owner_query).scalars().one_or_none()
-    
-#     if owner_result is None:
-#         raise NoResultFound(f'Owner with ID {current_owner_id} not found.')
-
-#     return {
-#         'profile': profile_result,
-#         'owner': owner_result
-#     }
-    
-
-
-# def find_all_profiles(owner_id):
-#     try:
-#         profiles = Profile.query.filter_by(owner_id=owner_id).all()
-#         return profiles
-#     except Exception as e:
-#         raise ValueError(f"Error retrieving profiles: {str(e)}")
 
 
 

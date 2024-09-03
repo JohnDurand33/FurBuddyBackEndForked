@@ -5,7 +5,7 @@ load_dotenv()
 
 class DevelopmentConfig:
     SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:@localhost/dogs_db'
-    CACHE_TYPE = "Simple_Cache"
+    CACHE_TYPE = "SimpleCache"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG = True
    

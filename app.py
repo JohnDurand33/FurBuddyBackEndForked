@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from flask import Flask
+from flask_caching import Cache
 from flask_cors import CORS 
 from flask_mail import Mail
 from config import DevelopmentConfig
@@ -17,6 +18,7 @@ from routes.profileBP import profile_blueprint
 
 load_dotenv()
 
+cache = Cache()
 mail = Mail()
 
 def create_app(config_name='DevelopmentConfig'):
@@ -28,6 +30,7 @@ def create_app(config_name='DevelopmentConfig'):
     db.init_app(app)
     ma.init_app(app)
     mail.init_app(app)
+    cache.init_app(app)
     
 # blueprint_config(app)
 # def blueprint_config(app):
