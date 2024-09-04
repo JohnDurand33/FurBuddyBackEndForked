@@ -65,22 +65,19 @@ def find_all(current_owner_id, owner_id):
     if current_owner_id != owner_id:
         return jsonify({"message": "Unauthorized access"}), 403
     
-    # Retrieve profiles
     try:
         profiles = db.session.query(Profile).filter(Profile.owner_id == owner_id).all()
         if not profiles:
             return jsonify({"message": "No profiles found for the given owner."}), 404
         
-        profile_schema = profileSchema(many=True)
-        result = profile_schema.dump(profiles)
+        result = profiles_schema.dump(profiles)
         return jsonify(result), 200
     
     except ValidationError as e:
         return jsonify({'error': str(e)}), 400
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
-   
+
     
 @handle_options
 @token_required

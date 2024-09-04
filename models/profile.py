@@ -25,7 +25,6 @@ class Profile(Base):
     
     owner_id: Mapped[int] = mapped_column(Integer, ForeignKey('Owner.id'), nullable=True)
     owner = relationship("DogOwner", back_populates="profiles")
-   
-        
- 
     
+    
+  

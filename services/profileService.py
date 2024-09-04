@@ -4,9 +4,7 @@ from models.profile import Profile
 from models.dogOwner import DogOwner
 from models.schemas.profileSchema import profile_schema  
 from sqlalchemy import select, delete
-from sqlalchemy.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
-from utils.util import token_required
 from utils.util import handle_options
 
 
@@ -83,7 +81,6 @@ def find_all_profiles(owner_id):
     except Exception as e:
         raise ValueError(f"Error retrieving profiles: {str(e)}")
 
-        
 
 def update_profile(profile_id, profile_data):
     profile = db.session.get(Profile, profile_id)
@@ -100,7 +97,6 @@ def update_profile(profile_id, profile_data):
     except IntegrityError as e:
         db.session.rollback()
         raise ValueError(f"Database Integrity Error: {e}")
-     
      
      
 def delete_profile(profile_id):
