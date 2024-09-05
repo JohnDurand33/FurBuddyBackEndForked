@@ -46,10 +46,10 @@ def save(profile_data, owner_id):
         weight=profile_data['weight'],
         chip_number=profile_data['chip_number'],
         image_path=profile_data.get('image_path', None),
-        vet_clinic_name=profile_data['vet_clinic_name', None],
-        vet_clinic_phone=profile_data['vet_clinic_phone', None],
-        vet_clinic_email=profile_data['vet_clinic_email', None],
-        vet_doctor_name=profile_data['vet_doctor_name', None],
+        vet_clinic_name=profile_data.get('vet_clinic_name', None),
+        vet_clinic_phone=profile_data.get('vet_clinic_phone', None),
+        vet_clinic_email=profile_data.get('vet_clinic_email', None),
+        vet_doctor_name=profile_data.get('vet_doctor_name', None),
         owner_id=owner_id
         )
     

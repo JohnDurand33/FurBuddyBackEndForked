@@ -85,9 +85,11 @@ def update_owner_info(id, owner_data):
 
 def delete_owner_from_db(id):
     try:
+        print(f"Attempting to delete owner with ID: {id}")
         query = delete(DogOwner).filter(DogOwner.id == id)
         result = db.session.execute(query)
         db.session.commit()
+        print(f"Rows affected: {result.rowcount}")
         if result.rowcount == 0:
             return {"message": "Owner not found"}, 404
         return {'message': 'Owner deleted successfully'}, 200

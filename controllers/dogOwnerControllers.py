@@ -7,6 +7,7 @@ from marshmallow import ValidationError
 from utils.util import token_required, handle_options
 
 
+
 @handle_options
 def login():
     try:
@@ -56,6 +57,7 @@ def show_owner_info(current_owner_id):
             return jsonify({"message": "Owner data not found"}), 404
 
         response = {
+            "id": owner_data['id'],
             "owner_email": owner_data['owner_email'],
             "owner_name": owner_data['owner_name'],
             "owner_phone": owner_data['owner_phone']
@@ -70,28 +72,27 @@ def show_owner_info(current_owner_id):
 
 @handle_options
 @token_required
-def update_owner(current_owner_id, id):
-    if current_owner_id != id:
-        return jsonify({"message": "Unauthorized access"}), 403
+def update_owner(current_owner_id):
     try:
         owner_data = request.json
-        response, status_code = update_owner_info(id, owner_data)
-        return jsonify(response), status_code
+        updated_owner, status_code = dogOwnerService.update_owner_info(current_owner_id, owner_data)
+        return jsonify(updated_owner), status_code
     except ValidationError as e:
         return jsonify(e.messages), 400
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    
-    
+
 @handle_options
 @token_required
-def delete_owner(current_owner_id, id):
-    if current_owner_id != id:
-        return jsonify({"message": "Unauthorized access"}), 403
-
-    response, status_code = delete_owner_from_db(id)
-    if status_code == 404:
-        return jsonify(response), 404
-    return jsonify(response), status_code
-
-
-
+def delete_owner(current_owner_id):
+    print(f"Attempting to delete owner with ID: {current_owner_id}") 
+    try:
+        response, status_code = dogOwnerService.delete_owner_from_db(current_owner_id)
+        return jsonify(response), status_code
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
