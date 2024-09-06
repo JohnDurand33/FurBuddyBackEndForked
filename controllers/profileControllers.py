@@ -1,48 +1,112 @@
 from flask import request, jsonify
+from database import db
 from models.schemas.profileSchema import profile_schema, profiles_schema
+from models.profile import Profile
+from models.schemas.dogOwnerSchema import dog_owner_schema
+from models.schemas import profileSchema 
 from services import profileService
+from services.profileService import save, find_profile_by_id, find_all_profiles, update_profile, delete_profile
+from services import dogOwnerService
+from services.profileService import save
 from marshmallow import ValidationError
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm.exc import NoResultFound
+from utils.util import token_required, handle_options
 
-def save():
-    try: 
-        profile_data = profile_schema.load(request.form)
-        image_file = request.files.get('image')
+
+
+@handle_options
+@token_required
+def save_profile(current_owner_id):
+    try:
+        profile_data = profile_schema.load(request.json)
+        profile_data['owner_id'] = current_owner_id
     except ValidationError as e:
         return jsonify(e.messages), 400
-    profile_saved = profileService.save(profile_data, image_file)
-    return profile_schema.jsonify(profile_data), 201
-
-
-def find_all():
-    all_profiles = profileService.find_all()
-    return profiles_schema.jsonify(all_profiles), 200
-
-
-def find_by_id(profile_id):
+    
     try:
-        profile = profileService.find_by_id(profile_id)
-    except profileService.NoResultFound as e:
-        return jsonify({'error': str(e)}), 404
+        profile_saved = save(profile_data, current_owner_id)
+        return profile_schema.jsonify(profile_saved), 201
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
 
-    return profile_schema.jsonify(profile), 200
 
-def update(profile_id):
+@handle_options
+@token_required
+def find_by_id(current_owner_id, profile_id):
     try:
-        profile_data = profile_schema.load(request.form, partial=True)
-        image_file = request.files.get('image')
+        profile = find_profile_by_id(profile_id)
+        if profile.owner_id != current_owner_id:
+            return jsonify({"message": "Unauthorized"}), 403
+        
+        profile_data = {
+            'id': profile.id,
+            'name': profile.name,
+            'date_of_birth': profile.date_of_birth.isoformat() if profile.date_of_birth else None,
+            'sex': profile.sex,
+            'fixed': profile.fixed,
+            'breed': profile.breed,
+            'weight': profile.weight,
+            'chip_number': profile.chip_number,
+            'image_path': profile.image_path,
+            'vet_clinic_name': profile.vet_clinic_name,
+            'vet_clinic_phone': profile.vet_clinic_phone,
+            'vet_clinic_email': profile.vet_clinic_email,
+            'vet_doctor_name': profile.vet_doctor_name,
+            'owner_id': profile.owner_id
+        }
+        return jsonify({"profile": profile_data}), 200
+    except ValueError as e:
+        return jsonify({"message": str(e)}), 404
+    
+    
+@handle_options
+@token_required
+def find_all(current_owner_id):
+    try:
+        profiles = db.session.query(Profile).filter(Profile.owner_id == current_owner_id).all()
+        if not profiles:
+            return jsonify({"message": "No profiles found for the given owner."}), 404
+        result = profiles_schema.dump(profiles)
+        return jsonify(result), 200
+    
     except ValidationError as e:
-        return jsonify(e.messages), 400
+        return jsonify({'error': str(e)}), 400
+    except SQLAlchemyError as e:
+        return jsonify({'error': f"Database error: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
+
+
+@handle_options
+@token_required
+def update_profile_info(current_owner_id, profile_id):
+    profile_data = request.json
+    
     try:
-        updated_profile = profileService.update(profile_id, profile_data, image_file)
-    except profileService.NoResultFound as e:
-        return jsonify({'error': str(e)}), 404
+        profile = find_profile_by_id(profile_id)
+        if profile.owner_id != current_owner_id:
+            return jsonify({"message": "Unauthorized"}), 403
+        
+        updated_profile = update_profile(profile_id, profile_data)
+        return profile_schema.jsonify(updated_profile), 200
+    except ValueError as e:
+        return jsonify({"message": str(e)}), 400
 
-    return profile_schema.jsonify(updated_profile), 200
 
-def delete(profile_id):
+
+@handle_options
+@token_required
+def delete_profile_info(current_owner_id, profile_id):
     try:
-        profileService.delete(profile_id)
-        return jsonify({'message': 'Profile was successfully deleted'}), 200
-    except profileService.NoResultFound as e:
-        return jsonify({'error': str(e)}), 404
+        profile = find_profile_by_id(profile_id)
+        if profile.owner_id != current_owner_id:
+            return jsonify({"message": "Unauthorized"}), 403
+        
+        delete_profile(profile_id)
+        return jsonify({"message": "Profile deleted successfully"}), 200
+    except ValueError as e:
+        return jsonify({"message": str(e)}), 400
+
+
