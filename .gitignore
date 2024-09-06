@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 path/to/your-service-account-key.json
 .env
 venv/
@@ -9,3 +10,12 @@ __pycache__/
 __pycache__
 *.pyc
 *$py
+=======
+# Byte-compiled
+.env
+.venv/
+__pycache__/
+__pycache__
+*.pyc
+*$py
+>>>>>>> upstream/main
