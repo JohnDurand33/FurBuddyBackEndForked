@@ -18,4 +18,3 @@ class DevelopmentConfig:
     # MAIL_PASSWORD = 'your-email-password'
     # MAIL_USE_TLS = True
     # MAIL_USE_SSL = False
->>>>>>> upstream/main
