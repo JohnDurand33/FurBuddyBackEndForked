@@ -13,6 +13,8 @@ from models.profile import Profile
 # from models.task import Task
 from routes.dogOwnerBP import dog_owner_blueprint
 from routes.profileBP import profile_blueprint
+from routes.medicalRecordBP import medical_record_blueprint
+from routes.medicalRecordBP import service_type_by_category_blueprint
 # from routes.taskBP import task_blueprint
 
 
@@ -29,7 +31,7 @@ def create_app(config_name='DevelopmentConfig'):
     
     db.init_app(app)
     ma.init_app(app)
-    mail.init_app(app)
+    # mail.init_app(app)
     cache.init_app(app)
     
 # blueprint_config(app)
@@ -39,6 +41,8 @@ def create_app(config_name='DevelopmentConfig'):
 
     app.register_blueprint(dog_owner_blueprint, url_prefix='/owner')
     app.register_blueprint(profile_blueprint, url_prefix='/profile')
+    app.register_blueprint(medical_record_blueprint, url_prefix='/medical_record')
+    app.register_blueprint(service_type_by_category_blueprint, url_prefix='/service_type')
     # app.register_blueprint(task_blueprint, url_prefix='/task')
     
     # blueprint_config(app)

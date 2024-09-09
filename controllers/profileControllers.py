@@ -15,6 +15,7 @@ from utils.util import token_required, handle_options
 
 
 
+
 @handle_options
 @token_required
 def save_profile(current_owner_id):
