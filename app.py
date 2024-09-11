@@ -17,8 +17,7 @@ from routes.medicalRecordBP import medical_record_blueprint
 from routes.medicalRecordBP import service_type_by_category_blueprint
 # from routes.taskBP import task_blueprint
 
-
-load_dotenv()
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
 
 cache = Cache()
 mail = Mail()
@@ -32,7 +31,9 @@ def create_app(config_name='DevelopmentConfig'):
     db.init_app(app)
     ma.init_app(app)
     # mail.init_app(app)
+    
     cache.init_app(app)
+    
     
 # blueprint_config(app)
 # def blueprint_config(app):
@@ -48,7 +49,7 @@ def create_app(config_name='DevelopmentConfig'):
     # blueprint_config(app)
 
     with app.app_context():
-        #db.drop_all()
+        # db.drop_all()
         db.create_all()
         
     return app
