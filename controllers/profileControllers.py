@@ -5,14 +5,13 @@ from models.profile import Profile
 from models.schemas.dogOwnerSchema import dog_owner_schema
 from models.schemas import profileSchema 
 from services import profileService
-from services.profileService import save, find_profile_by_id, find_all_profiles, update_profile, delete_profile
+from services.profileService import save, find_profile_by_id, find_all_profiles, update_profile, delete_profile, calculate_age
 from services import dogOwnerService
 from services.profileService import save
 from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
 from utils.util import token_required, handle_options
-
 
 
 
@@ -44,6 +43,7 @@ def find_by_id(current_owner_id, profile_id):
             'id': profile.id,
             'name': profile.name,
             'date_of_birth': profile.date_of_birth.isoformat() if profile.date_of_birth else None,
+            'age': calculate_age(profile.date_of_birth),
             'sex': profile.sex,
             'fixed': profile.fixed,
             'breed': profile.breed,
