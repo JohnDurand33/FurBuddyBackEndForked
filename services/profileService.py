@@ -15,6 +15,7 @@ def calculate_age(date_of_birth):
     if isinstance(date_of_birth, datetime):
         date_of_birth = date_of_birth.date()
     age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
+    print(f"Date of Birth: {date_of_birth}, Today: {today}, Calculated Age: {age}")
     return age
 
 
@@ -36,6 +37,7 @@ def save(profile_data, owner_id):
     
     age = calculate_age(date_of_birth)
     profile_data['age'] = age
+    print(f"Calculated Age: {age}")
     
     new_profile = Profile(
         name=profile_data['name'],
@@ -57,6 +59,7 @@ def save(profile_data, owner_id):
         db.session.add(new_profile)
         db.session.commit()
         db.session.refresh(new_profile)
+        print(f"Profile saved: {new_profile}")
         return new_profile
     except IntegrityError as e:
             db.session.rollback()
