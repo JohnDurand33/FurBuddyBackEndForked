@@ -17,14 +17,9 @@ from utils.util import token_required, handle_options
 @token_required
 def save_profile(current_owner_id):
     try:
-        # Load and validate profile data from request
         profile_data = profile_schema.load(request.json)
         profile_data['owner_id'] = current_owner_id
-        
-        # Save the profile and get the saved profile data with age
         profile_saved_data = save(profile_data, current_owner_id)
-        
-        # Return the saved profile data with age
         return jsonify(profile_saved_data), 201
     
     except ValidationError as e:
@@ -34,21 +29,6 @@ def save_profile(current_owner_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-# @handle_options
-# @token_required
-# def save_profile(current_owner_id):
-#     try:
-#         profile_data = profile_schema.load(request.json)
-#         profile_data['owner_id'] = current_owner_id
-#     except ValidationError as e:
-#         return jsonify(e.messages), 400
-    
-#     try:
-#         profile_saved = save(profile_data, current_owner_id)
-#         return profile_schema.jsonify(profile_saved), 201
-#     except ValueError as e:
-#         return jsonify({'error': str(e)}), 400
-
 
 @handle_options
 @token_required
