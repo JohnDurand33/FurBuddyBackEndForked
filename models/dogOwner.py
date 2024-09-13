@@ -1,15 +1,16 @@
 from sqlalchemy import Column, Integer, String
-from database import db, Base
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from database import db
+from flask_sqlalchemy import SQLAlchemy
 
 class DogOwner(db.Model):
     __tablename__ = 'Owner'
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    password: Mapped[str] = mapped_column(db.String(255), nullable=False)
-    owner_name: Mapped[str] = mapped_column(db.String(100), nullable=True)
-    owner_email: Mapped[str] = mapped_column(db.String(100), nullable=False)
-    owner_phone: Mapped[str] = mapped_column(db.String(25), nullable=True)
     
-    profiles = relationship("Profile", back_populates="owner")
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    password = db.Column(db.String(255), nullable=False)
+    owner_name = db.Column(db.String(100), nullable=True)
+    owner_email = db.Column(db.String(100), nullable=False)
+    owner_phone = db.Column(db.String(25), nullable=True)
+    
+    profiles = db.relationship("Profile", back_populates="owner")
 
  

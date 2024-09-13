@@ -7,7 +7,6 @@ from flask_mail import Mail
 from config import DevelopmentConfig
 from database import db
 from models.schemas import ma
-from sqlalchemy import inspect, text
 from models.dogOwner import DogOwner
 from models.profile import Profile
 from models.medicalRecord import MedicalRecord
@@ -35,8 +34,6 @@ def create_app(config_name='DevelopmentConfig'):
     
     cache.init_app(app)
     
-    print(app.config['SQLALCHEMY_DATABASE_URI'])
-# blueprint_config(app)
 # def blueprint_config(app):
 
     CORS(app)
