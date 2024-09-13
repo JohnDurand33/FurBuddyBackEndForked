@@ -36,9 +36,6 @@ def save(profile_data, owner_id):
     elif date_of_birth is not None and not isinstance(date_of_birth, (date, datetime)):
         raise ValueError("Date of birth must be a string or a date object.")
     
-    # age = calculate_age(date_of_birth)
-    # profile_data['age'] = age
-    # print(f"Calculated Age: {age}")
     
     new_profile = Profile(
         name=profile_data['name'],
