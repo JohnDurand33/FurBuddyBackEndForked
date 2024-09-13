@@ -5,7 +5,7 @@ from datetime import date
 from sqlalchemy import Date
 
 
-class Category(Base):
+class Category(db.Model):
     __tablename__ = 'Category'
     
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -15,7 +15,7 @@ class Category(Base):
     service_types = relationship("ServiceType", back_populates="category")
     
     
-class ServiceType(Base):
+class ServiceType(db.Model):
     __tablename__ = 'ServiceType'
     
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -26,7 +26,7 @@ class ServiceType(Base):
     medical_records = relationship("MedicalRecord", back_populates="service_type")
 
 
-class MedicalRecord(Base):
+class MedicalRecord(db.Model):
     __tablename__ = 'MedicalRecord'
     
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)

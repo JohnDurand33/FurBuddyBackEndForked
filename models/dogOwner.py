@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String
 from database import db, Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-class DogOwner(Base):
+class DogOwner(db.Model):
     __tablename__ = 'Owner'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     password: Mapped[str] = mapped_column(db.String(255), nullable=False)

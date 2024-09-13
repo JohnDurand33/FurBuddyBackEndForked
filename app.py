@@ -7,9 +7,10 @@ from flask_mail import Mail
 from config import DevelopmentConfig
 from database import db
 from models.schemas import ma
-
+from sqlalchemy import inspect, text
 from models.dogOwner import DogOwner
 from models.profile import Profile
+from models.medicalRecord import MedicalRecord
 # from models.task import Task
 from routes.dogOwnerBP import dog_owner_blueprint
 from routes.profileBP import profile_blueprint
@@ -34,7 +35,7 @@ def create_app(config_name='DevelopmentConfig'):
     
     cache.init_app(app)
     
-    
+    print(app.config['SQLALCHEMY_DATABASE_URI'])
 # blueprint_config(app)
 # def blueprint_config(app):
 
@@ -48,10 +49,9 @@ def create_app(config_name='DevelopmentConfig'):
     # blueprint_config(app)
 
     with app.app_context():
-        # db.drop_all()
+        db.drop_all()
         db.create_all()
-        
-        
+
     return app
     
     
