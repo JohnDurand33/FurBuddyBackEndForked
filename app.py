@@ -10,6 +10,7 @@ from models.schemas import ma
 
 from models.dogOwner import DogOwner
 from models.profile import Profile
+from models.medicalRecord import MedicalRecord
 # from models.task import Task
 from routes.dogOwnerBP import dog_owner_blueprint
 from routes.profileBP import profile_blueprint
@@ -34,7 +35,6 @@ def create_app(config_name='DevelopmentConfig'):
     # mail.init_app(app)
     cache.init_app(app)
     
-# blueprint_config(app)
 # def blueprint_config(app):
 
     CORS(app)
