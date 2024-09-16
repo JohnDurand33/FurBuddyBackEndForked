@@ -29,7 +29,7 @@ def get_categories():
 def get_service_types():
     try:
         service_types = db.session.query(ServiceType).all()
-        result = [{'id': st.id, 'name': st.service_type_name} for st in service_types]
+        result = [{'id': st.id, 'name': st.service_type_name, 'category_id': st.category_id} for st in service_types]
         return jsonify(result)
     except SQLAlchemyError as e:
         return jsonify({'message': str(e)}), 500
@@ -65,7 +65,6 @@ def add_medical_record(current_owner_id, profile_id):
         new_record = create_medical_record(current_owner_id, data)
         result = medical_record_schema.dump(new_record)
         return jsonify({'message': 'Record added successfully', 'record': result}), 201
-
     except ValueError as ve:
         return jsonify({'message': str(ve)}), 400
     except SQLAlchemyError as e:
@@ -110,7 +109,6 @@ def get_medical_record(current_owner_id, profile_id, record_id):
 @token_required
 def edit_medical_record(current_owner_id, profile_id, record_id):
     json_data = request.get_json()
-
     try:
         data = medical_record_schema.load(json_data, partial=True)
     except ValidationError as err:
@@ -118,7 +116,6 @@ def edit_medical_record(current_owner_id, profile_id, record_id):
 
     try:
         updated_record = update_medical_record(current_owner_id, profile_id, record_id, data)
-        
         result = {
             'service_date': updated_record.service_date,
             'category_name': updated_record.category.category_name if updated_record.category else None,
@@ -129,7 +126,6 @@ def edit_medical_record(current_owner_id, profile_id, record_id):
             'profile_id': updated_record.profile_id
         }
         return jsonify({'message': 'Record updated successfully', 'record': result})
-
     except ValueError as ve:
         return jsonify({'message': str(ve)}), 400
     except SQLAlchemyError as e:
@@ -157,7 +153,7 @@ def delete_medical_record(current_owner_id, profile_id, record_id):
 
 @handle_options
 @token_required
-def get_medical_records(current_owner_id, profile_id):
+def get_medical_records(current_owner_id, profile_id):  
     try:
         records = db.session.query(MedicalRecord).join(Category).join(ServiceType).filter(MedicalRecord.profile_id == profile_id).all()
         profile = db.session.query(Profile).filter(Profile.id == profile_id).first()
@@ -170,7 +166,9 @@ def get_medical_records(current_owner_id, profile_id):
                 'id': record.id,
                 'service_date': record.service_date,
                 'category_name': record.category.category_name if record.category else None,
+                'category_id': record.category_id,
                 'service_type_name': record.service_type.service_type_name if record.service_type else None,
+                'service_type_id': record.service_type_id,
                 'follow_up_date': record.follow_up_date,
                 'fee': str(record.fee) if record.fee else None,
                 'image_path': record.image_path,

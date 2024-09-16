@@ -69,6 +69,7 @@ def get_medical_record_by_id(record_id, profile_id):
 
 
 def update_medical_record(current_owner_id, profile_id, record_id, data):
+    print('in the update service')
     record = db.session.query(MedicalRecord).join(Profile).filter(MedicalRecord.id == record_id, MedicalRecord.profile_id == profile_id).first()
     if not record:
         raise ValueError('Record not found or unauthorized access')
@@ -77,30 +78,39 @@ def update_medical_record(current_owner_id, profile_id, record_id, data):
         raise ValueError('Unauthorized access to this record')
     
     if 'service_date' in data:
+        print('service date in data')
         record.service_date = data['service_date']
     if 'category_id' in data:
+        print('category id in data')
         category = db.session.query(Category).filter_by(id=data['category_id']).first()
         if not category:
             raise ValueError('Invalid category ID')
         record.category_id = data['category_id']
+        print(f'category id: {category.id}')
     if 'service_type_id' in data:
+        print('service type id in data')
         service_type = db.session.query(ServiceType).filter_by(id=data['service_type_id']).first()
         if not service_type:
             raise ValueError('Invalid service type ID')
         record.service_type_id = data['service_type_id']
+        print(f'service type id: {service_type.id}')
     if 'follow_up_date' in data:
         record.follow_up_date = data['follow_up_date']
+        print(f'follow up date: {record.follow_up_date}')
     if 'fee' in data:
+        print('fee in data')
         record.fee = data['fee']
     if 'image_path' in data:
+        print('image path in data')
         record.image_path = data['image_path']
-
+        print(f'image path: {record.image_path}')
+    print('about to commit')
     try:
         db.session.commit()
     except SQLAlchemyError as e:
         db.session.rollback()
         raise ValueError(f"Database error: {str(e)}")
-
+    print('committed')
     return record
 
 
