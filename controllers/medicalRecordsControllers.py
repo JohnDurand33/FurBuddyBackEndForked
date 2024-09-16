@@ -29,7 +29,14 @@ def get_categories():
 def get_service_types():
     try:
         service_types = db.session.query(ServiceType).all()
-        result = [{'id': st.id, 'name': st.service_type_name} for st in service_types]
+        result = [
+            {
+                'id': st.id,
+                'name': st.service_type_name,
+                'category_id': st.category_id
+            } 
+            for st in service_types
+        ]
         return jsonify(result)
     except SQLAlchemyError as e:
         return jsonify({'message': str(e)}), 500
