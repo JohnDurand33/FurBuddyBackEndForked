@@ -3,7 +3,7 @@ import os
 from flask import current_app
 from database import db
 from datetime import date
-from services.medicalRecordService import create_medical_record, get_medical_record_by_id, update_medical_record, delete_medical_record_by_id, get_paginated_records, records_by_service_type, records_by_category
+from services.medicalRecordService import create_medical_record, get_medical_record_by_id, update_medical_record, delete_medical_record_by_id, get_paginated_records, filtered_records
 from models.schemas.medicalRecordSchema import CategorySchema, medical_record_schema, medical_records_schema
 from models.medicalRecord import MedicalRecord
 from models.medicalRecord import ServiceType
@@ -29,7 +29,14 @@ def get_categories():
 def get_service_types():
     try:
         service_types = db.session.query(ServiceType).all()
-        result = [{'id': st.id, 'name': st.service_type_name, 'category_id': st.category_id} for st in service_types]
+        result = [
+            {
+                'id': st.id,
+                'name': st.service_type_name,
+                'category_id': st.category_id
+            } 
+            for st in service_types
+        ]
         return jsonify(result)
     except SQLAlchemyError as e:
         return jsonify({'message': str(e)}), 500
@@ -148,113 +155,67 @@ def delete_medical_record(current_owner_id, profile_id, record_id):
         return jsonify({'message': str(e)}), 500
     except Exception as e:
         return jsonify({'message': str(e)}), 500
-
-    
-
-@handle_options
-@token_required
-def get_medical_records(current_owner_id, profile_id):  
-    try:
-        records = db.session.query(MedicalRecord).join(Category).join(ServiceType).filter(MedicalRecord.profile_id == profile_id).all()
-        profile = db.session.query(Profile).filter(Profile.id == profile_id).first()
-        if not profile or profile.owner_id != current_owner_id:
-            return jsonify({'message': 'Unauthorized access to this profile'}), 403
-        
-        result = []
-        for record in records:
-            result.append({
-                'id': record.id,
-                'service_date': record.service_date,
-                'category_name': record.category.category_name if record.category else None,
-                'category_id': record.category_id,
-                'service_type_name': record.service_type.service_type_name if record.service_type else None,
-                'service_type_id': record.service_type_id,
-                'follow_up_date': record.follow_up_date,
-                'fee': str(record.fee) if record.fee else None,
-                'image_path': record.image_path,
-                'profile_id': record.profile_id
-            })
-        return jsonify(result)
-
-    except SQLAlchemyError as e:
-        return jsonify({'message': str(e)}), 500
-    except Exception as e:
-        return jsonify({'message': str(e)}), 500
-
-    
-@handle_options
-@token_required
-def get_paginated_medical_records(current_owner_id, profile_id):
-    page = request.args.get('page', default=1, type=int)
-    per_page = request.args.get('per_page', default=10, type=int)
-
-    try:
-        records = get_paginated_records(page, per_page, profile_id)
-        return jsonify(records)
-    except RuntimeError as re:
-        return jsonify({'message': str(re)}), 500
-    except Exception as e:
-        return jsonify({'message': str(e)}), 500
-    
-    
-
-@handle_options
-@token_required
-def get_records_by_category(current_owner_id, profile_id, category_id):
-    try:
-        records = records_by_category(profile_id, category_id)
-        return jsonify(records)
-    except ValueError as ve:
-        return jsonify({'message': str(ve)}), 400
-    except RuntimeError as re:
-        return jsonify({'message': str(re)}), 500
-    except Exception as e:
-        return jsonify({'message': str(e)}), 500
-    
-    
-    
-@handle_options
-@token_required
-def get_records_by_service_type(current_owner_id, profile_id, service_type_id):
-    try:
-        records = records_by_service_type(profile_id, service_type_id)
-        return jsonify(records)
-    except ValueError as ve:
-        return jsonify({'message': str(ve)}), 400
-    except RuntimeError as re:
-        return jsonify({'message': str(re)}), 500
-    except Exception as e:
-        return jsonify({'message': str(e)}), 500
     
     
 
 # @handle_options
 # @token_required
-# def get_records_by_service_date_range(current_owner_id):
+# def get_medical_records(current_owner_id, profile_id):
 #     try:
-#         profile_id = request.args.get('profile_id', type=int)
-#         start_date_str = request.args.get('start_date')
-#         end_date_str = request.args.get('end_date')
+#         records = db.session.query(MedicalRecord).join(Category).join(ServiceType).filter(MedicalRecord.profile_id == profile_id).all()
+#         profile = db.session.query(Profile).filter(Profile.id == profile_id).first()
+#         if not profile or profile.owner_id != current_owner_id:
+#             return jsonify({'message': 'Unauthorized access to this profile'}), 403
+        
+#         result = []
+#         for record in records:
+#             result.append({
+#                 'id': record.id,
+#                 'service_date': record.service_date,
+#                 'category_name': record.category.category_name if record.category else None,
+#                 'service_type_name': record.service_type.service_type_name if record.service_type else None,
+#                 'follow_up_date': record.follow_up_date,
+#                 'fee': str(record.fee) if record.fee else None,
+#                 'image_path': record.image_path,
+#                 'profile_id': record.profile_id
+#             })
+#         return jsonify(result)
 
-#         if not profile_id or not start_date_str or not end_date_str:
-#             raise ValueError('Missing required parameters')
-
-#         try:
-#             start_date = date.fromisoformat(start_date_str)
-#             end_date = date.fromisoformat(end_date_str)
-#         except ValueError:
-#             raise ValueError('Invalid date format. Dates should be in YYYY-MM-DD format.')
-
-#         records = records_by_service_date_range(profile_id, start_date, end_date)
-#         return jsonify(records)
-    
-#     except ValueError as ve:
-#         return jsonify({'message': str(ve)}), 400
-#     except RuntimeError as re:
-#         return jsonify({'message': str(re)}), 500
+#     except SQLAlchemyError as e:
+#         return jsonify({'message': str(e)}), 500
 #     except Exception as e:
 #         return jsonify({'message': str(e)}), 500
-    
 
     
+@handle_options
+@token_required
+def get_medical_records(current_owner_id, profile_id):
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', type=int)
+    offset = request.args.get('offset', default=0, type=int)
+
+    try:
+        records = get_paginated_records(page, limit, offset, profile_id)
+        return jsonify(records)
+    except RuntimeError as re:
+        return jsonify({'message': str(re)}), 500
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+    
+
+
+@handle_options
+@token_required
+def get_filtered_records(current_owner_id, profile_id):
+    category_id = request.args.get('category_id', type=int)
+    service_type_id = request.args.get('service_type_id', type=int)
+
+    if category_id is None and service_type_id is None:
+        return jsonify({"error": "At least one filter parameter (category_id or service_type_id) is required."}), 400
+
+    try:
+        records = filtered_records(profile_id, category_id, service_type_id)
+        return jsonify(records), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500  
 

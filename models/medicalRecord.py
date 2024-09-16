@@ -36,6 +36,6 @@ class MedicalRecord(db.Model):
     image_path = db.Column(db.String(500), nullable=True)
     profile_id = db.Column(db.Integer, db.ForeignKey('Profile.id'), nullable=False)
     
-    category = db.relationship("Category")
-    service_type = db.relationship("ServiceType")
+    category = db.relationship("Category", back_populates="medical_records")
+    service_type = db.relationship("ServiceType", back_populates="medical_records")
     profile = db.relationship("Profile", back_populates="medical_records")

@@ -1,6 +1,6 @@
 import os
 from database import db
-from flask import jsonify
+from flask import jsonify, request
 from werkzeug.utils import secure_filename
 from flask import current_app
 from models.medicalRecord import Category, ServiceType, MedicalRecord
@@ -12,6 +12,7 @@ from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from marshmallow import ValidationError
 from sqlalchemy.orm import joinedload
+from sqlalchemy.dialects import mysql
 
 
 
@@ -135,119 +136,28 @@ def delete_medical_record_by_id(current_owner_id, profile_id, record_id):
         raise ValueError(f"Database error: {str(e)}")
     except Exception as e:
         raise ValueError(f"Error: {str(e)}")
-     
-
-def get_paginated_records(page, per_page=10, profile_id=None):
-    try:
-        offset = (page - 1) * per_page
-        limit = per_page
-
-        records_query = db.session.query(MedicalRecord).join(Category).join(ServiceType).offset(offset).limit(limit)
-        records = records_query.all()
-
-        result = []
-        for record in records:
-            result.append({
-                'id': record.id,
-                'service_date': record.service_date,
-                'category_name': record.category.category_name,
-                'service_type_name': record.service_type.service_type_name,
-                'follow_up_date': record.follow_up_date,
-                'fee': str(record.fee) if record.fee else None,
-                'image_path': record.image_path,
-                'profile_id': record.profile_id
-            })
-
-        return result
-
-    except SQLAlchemyError as e:
-        raise RuntimeError(f"Database error: {str(e)}")
-    except Exception as e:
-        raise RuntimeError(f"Error: {str(e)}")
     
     
-def records_by_category(profile_id, category_id):
-    try:
-        category = db.session.query(Category).filter_by(id=category_id).first()
-        if not category:
-            raise ValueError('Invalid category ID')
-
-        records = db.session.query(MedicalRecord).join(Category).join(ServiceType).filter(
-            MedicalRecord.category_id == category_id,
-            MedicalRecord.profile_id == profile_id
-        ).all()
-
-        result = []
-        for record in records:
-            result.append({
-                'id': record.id,
-                'service_date': record.service_date,
-                'category_name': record.category.category_name,
-                'service_type_name': record.service_type.service_type_name,
-                'follow_up_date': record.follow_up_date,
-                'fee': str(record.fee) if record.fee else None,
-                'image_path': record.image_path,
-                'profile_id': record.profile_id
-            })
-
-        return result
-
-    except SQLAlchemyError as e:
-        raise RuntimeError(f"Database error: {str(e)}")
-    except Exception as e:
-        raise RuntimeError(f"Error: {str(e)}")
-
-
-def records_by_service_type(profile_id, service_type_id):
-    try:
-        service_type = db.session.query(ServiceType).filter_by(id=service_type_id).first()
-        if not service_type:
-            raise ValueError('Invalid service type ID')
-
-        records = db.session.query(MedicalRecord).join(Category).join(ServiceType).filter(
-            MedicalRecord.service_type_id == service_type_id,
-            MedicalRecord.profile_id == profile_id
-        ).all()
-
-        result = []
-        for record in records:
-            result.append({
-                'id': record.id,
-                'service_date': record.service_date,
-                'category_name': record.category.category_name,
-                'service_type_name': record.service_type.service_type_name,
-                'follow_up_date': record.follow_up_date,
-                'fee': str(record.fee) if record.fee else None,
-                'image_path': record.image_path,
-                'profile_id': record.profile_id
-            })
-
-        return result
-
-    except SQLAlchemyError as e:
-        raise RuntimeError(f"Database error: {str(e)}")
-    except Exception as e:
-        raise RuntimeError(f"Error: {str(e)}")
-
-
-
-# def records_by_service_date_range(profile_id, start_date, end_date):
+# def get_paginated_records(page, limit, offset, profile_id=None):
 #     try:
-#         if start_date > end_date:
-#             raise ValueError('Start date cannot be after end date')
-#         records = db.session.query(MedicalRecord).filter(
-#             MedicalRecord.profile_id == profile_id,
-#             MedicalRecord.service_date >= start_date,
-#             MedicalRecord.service_date <= end_date
-#         ).all()
+#         # Calculate offset based on page and limit
+#         if page is not None and limit is not None:
+#             offset = (page - 1) * limit
+        
+#         # Build the base query
+#         query = db.session.query(MedicalRecord).join(Category).join(ServiceType).filter(MedicalRecord.profile_id == profile_id)
 
+#         # Apply pagination
+#         records = query.offset(offset).limit(limit).all()
+
+#         # Format the result
 #         result = []
 #         for record in records:
 #             result.append({
 #                 'id': record.id,
 #                 'service_date': record.service_date,
-#                 'category_name': record.category.category_name,
-#                 'service_type_name': record.service_type.service_type_name,
+#                 'category_name': record.category.category_name if record.category else None,
+#                 'service_type_name': record.service_type.service_type_name if record.service_type else None,
 #                 'follow_up_date': record.follow_up_date,
 #                 'fee': str(record.fee) if record.fee else None,
 #                 'image_path': record.image_path,
@@ -261,3 +171,58 @@ def records_by_service_type(profile_id, service_type_id):
 #     except Exception as e:
 #         raise RuntimeError(f"Error: {str(e)}")
 
+     
+
+def get_paginated_records(page, limit, offset, profile_id=None):
+    try:
+        query = db.session.query(MedicalRecord).join(Category).join(ServiceType, MedicalRecord.service_type_id == ServiceType.id).filter(
+            MedicalRecord.profile_id == profile_id).limit(limit).offset(offset)
+        print(query)
+        
+        records = query.all()
+
+        result = []
+        for record in records:
+            result.append({
+                'id': record.id,
+                'service_date': record.service_date,
+                'category_name': record.category.category_name,
+                'service_type_name': record.service_type.service_type_name,
+                'follow_up_date': record.follow_up_date,
+                'fee': str(record.fee) if record.fee else None,
+                'image_path': record.image_path,
+                'profile_id': record.profile_id
+            })
+
+        return result
+
+    except SQLAlchemyError as e:
+        raise RuntimeError(f"Database error: {str(e)}")
+    except Exception as e:
+        raise RuntimeError(f"Error: {str(e)}")
+    
+
+
+
+def filtered_records(profile_id, category_id=None, service_type_id=None):
+    query = db.session.query(MedicalRecord).filter_by(profile_id=profile_id)
+    
+    if category_id is not None:
+        query = query.filter_by(category_id=category_id)
+    
+    if service_type_id is not None:
+        query = query.filter_by(service_type_id=service_type_id)
+    
+    records = query.all()
+    
+    records = [{
+            'id': record.id,
+            'service_date': record.service_date,
+            'category_name': record.category.category_name if record.category else None,
+            'service_type_name': record.service_type.service_type_name if record.service_type else None,
+            'follow_up_date': record.follow_up_date if record.follow_up_date else None,
+            'fee': str(record.fee) if record.fee else None,
+            'image_path': record.image_path,
+            'profile_id': record.profile_id
+    } for record in records]
+    return records
