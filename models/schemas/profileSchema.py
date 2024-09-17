@@ -17,7 +17,6 @@ class ProfileSchema(ma.Schema):
     vet_clinic_email = fields.String()
     vet_doctor_name = fields.String()
   
-    
     class Meta:
         fields = ("id", "name", "date_of_birth", "age", "sex", "fixed", "breed", "weight", "chip_number", "image_path", "vet_clinic_name", "vet_clinic_phone", "vet_clinic_email", "vet_doctor_name")
         

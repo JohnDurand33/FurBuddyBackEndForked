@@ -7,7 +7,6 @@ class DogOwnerSchema(ma.Schema):
     owner_name = fields.String()
     owner_email = fields.String(required=True)
     owner_phone = fields.String()
-
     class Meta:
         fields = ("id", "password", "owner_name", "owner_email", "owner_phone")
         
