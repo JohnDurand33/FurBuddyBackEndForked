@@ -175,6 +175,8 @@ def get_paginated_records(page, limit, offset, profile_id=None):
         for record in records:
             result.append({
                 'id': record.id,
+                'service_type_id': record.service_type_id,
+                'category_id': record.category_id,
                 'service_date': record.service_date,
                 'category_name': record.category.category_name,
                 'service_type_name': record.service_type.service_type_name,

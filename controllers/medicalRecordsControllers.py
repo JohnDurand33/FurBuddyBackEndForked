@@ -99,7 +99,9 @@ def get_medical_record(current_owner_id, profile_id, record_id):
             'fee': str(record.fee) if record.fee else None,
             'image_path': record.image_path,
             'profile_id': record.profile_id,
-            'profile_name': record.profile.name if record.profile else None  
+            'profile_name': record.profile.name if record.profile else None  ,
+            'service_type_id': record.service_type_id,
+            'category_id': record.category_id
         }
 
         return jsonify(response_data)
