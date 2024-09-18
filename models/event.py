@@ -1,4 +1,5 @@
 from database import db
+from sqlalchemy import Index
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.orm import relationship
@@ -18,4 +19,11 @@ class Event(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey('Owner.id'), nullable=False)  
 
     owner = db.relationship('DogOwner', backref=db.backref('events', lazy=True))
+    
+
+    __table_args__ = (
+        Index('ix_event_owner_id', 'owner_id'), 
+        Index('ix_event_start_time', 'start_time'), 
+        Index('ix_event_end_time', 'end_time'),
+    )    
     

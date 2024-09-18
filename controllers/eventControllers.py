@@ -22,7 +22,7 @@ def create_event(current_owner_id):
 def get_event(current_owner_id, event_id):
     result = get_event_by_id(current_owner_id, event_id)
     if result is None:
-        return jsonify({"message": "Unauthorized"}), 403
+        return jsonify({"message": "Event not found"}), 404
     return jsonify(result)
 
 
@@ -32,7 +32,7 @@ def update_event(current_owner_id, event_id):
     data = request.get_json()
     result = update_event_by_id(current_owner_id, event_id, data)
     if result is None:
-        return jsonify({"message": "Unauthorized"}), 403
+        return jsonify({"message": "Event not found"}), 404
     return jsonify(result)
 
 
@@ -41,7 +41,7 @@ def update_event(current_owner_id, event_id):
 def delete_event(current_owner_id, event_id):
     result = delete_event_by_id(current_owner_id, event_id)
     if result is None:
-        return jsonify({"message": "Unauthorized"}), 403
+        return jsonify({"message": "Event not found"}), 404
     return jsonify(result), 200
 
 
