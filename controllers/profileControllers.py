@@ -5,14 +5,12 @@ from models.profile import Profile
 from models.schemas.dogOwnerSchema import dog_owner_schema
 from models.schemas import profileSchema 
 from services import profileService
-from services.profileService import save, find_profile_by_id, find_all_profiles, update_profile, delete_profile
+from services.profileService import save, find_profile_by_id, find_all_profiles, update_profile, delete_profile, calculate_age
 from services import dogOwnerService
-from services.profileService import save
 from marshmallow import ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
 from utils.util import token_required, handle_options
-
 
 
 @handle_options
@@ -21,15 +19,16 @@ def save_profile(current_owner_id):
     try:
         profile_data = profile_schema.load(request.json)
         profile_data['owner_id'] = current_owner_id
-    except ValidationError as e:
-        return jsonify(e.messages), 400
+        profile_saved_data = save(profile_data, current_owner_id)
+        return jsonify(profile_saved_data), 201
     
-    try:
-        profile_saved = save(profile_data, current_owner_id)
-        return profile_schema.jsonify(profile_saved), 201
+    except ValidationError as e:
+        return jsonify({'error': e.messages}), 400
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
-
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
 
 @handle_options
 @token_required
@@ -43,6 +42,7 @@ def find_by_id(current_owner_id, profile_id):
             'id': profile.id,
             'name': profile.name,
             'date_of_birth': profile.date_of_birth.isoformat() if profile.date_of_birth else None,
+            'age': calculate_age(profile.date_of_birth),
             'sex': profile.sex,
             'fixed': profile.fixed,
             'breed': profile.breed,
@@ -64,19 +64,16 @@ def find_by_id(current_owner_id, profile_id):
 @token_required
 def find_all(current_owner_id):
     try:
-        profiles = db.session.query(Profile).filter(Profile.owner_id == current_owner_id).all()
+        profiles = find_all_profiles(current_owner_id)
         if not profiles:
             return jsonify({"message": "No profiles found for the given owner."}), 404
-        result = profiles_schema.dump(profiles)
-        return jsonify(result), 200
+        
+        return jsonify(profiles), 200
     
-    except ValidationError as e:
+    except ValueError as e:
         return jsonify({'error': str(e)}), 400
-    except SQLAlchemyError as e:
-        return jsonify({'error': f"Database error: {str(e)}"}), 500
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 
 
 @handle_options

@@ -1,7 +1,13 @@
-# Byte-compiled
+path/to/your-service-account-key.json
 .env
+".env" 
+venv/
 .venv/
+**__pycache__/
+*__pycache__/
 __pycache__/
+**__pycache__
+*__pycache__
 __pycache__
 *.pyc
 *$py
