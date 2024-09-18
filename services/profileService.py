@@ -146,6 +146,7 @@ def update_profile(profile_id, profile_data):
      
 def delete_profile(profile_id):
     profile = db.session.get(Profile, profile_id)
+
     if not profile:
         raise ValueError(f"Profile with ID {profile_id} does not exist.")
     

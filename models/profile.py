@@ -24,6 +24,6 @@ class Profile(db.Model):
     
     owner_id = db.Column(db.Integer, db.ForeignKey('Owner.id'), nullable=True)
     owner = db.relationship("DogOwner", back_populates="profiles")
-    medical_records = db.relationship("MedicalRecord", back_populates="profile")
+    medical_records = db.relationship("MedicalRecord", back_populates="profile", cascade="all, delete-orphan")
     
   

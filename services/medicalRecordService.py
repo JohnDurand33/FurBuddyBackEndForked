@@ -70,6 +70,7 @@ def get_medical_record_by_id(record_id, profile_id):
 
 
 def update_medical_record(current_owner_id, profile_id, record_id, data):
+    print('in the update service')
     record = db.session.query(MedicalRecord).join(Profile).filter(MedicalRecord.id == record_id, MedicalRecord.profile_id == profile_id).first()
     if not record:
         raise ValueError('Record not found or unauthorized access')
@@ -95,18 +96,17 @@ def update_medical_record(current_owner_id, profile_id, record_id, data):
         record.fee = data['fee']
     if 'image_path' in data:
         record.image_path = data['image_path']
-
     try:
         db.session.commit()
     except SQLAlchemyError as e:
         db.session.rollback()
         raise ValueError(f"Database error: {str(e)}")
-
     return record
 
 
 def delete_medical_record_by_id(current_owner_id, profile_id, record_id):
     try:
+        print('in the delete service')
         record = db.session.query(MedicalRecord).join(Profile).filter(
             MedicalRecord.id == record_id,
             MedicalRecord.profile_id == profile_id
@@ -141,6 +141,8 @@ def get_paginated_records(page, limit, offset, profile_id=None):
         for record in records:
             result.append({
                 'id': record.id,
+                'service_type_id': record.service_type_id,
+                'category_id': record.category_id,
                 'service_date': record.service_date,
                 'category_name': record.category.category_name,
                 'service_type_name': record.service_type.service_type_name,
