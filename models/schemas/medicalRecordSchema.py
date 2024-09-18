@@ -3,10 +3,9 @@ from marshmallow import fields, Schema
 
 
 
-class CategorySchema(Schema):
+class CategorySchema(ma.Schema):
     id = fields.Int(dump_only=True)
     category_name = fields.Str(required=True)
-
     class Meta:
         fields = ("id", "category_name")
         
@@ -14,10 +13,9 @@ category_schema = CategorySchema()
         
         
         
-class ServiceTypeSchema(Schema):
+class ServiceTypeSchema(ma.Schema):
     id = fields.Int(dump_only=True)
     service_type_name = fields.Str(required=True)
-
 
     class Meta:
         fields = ("id", "service_type_name")
@@ -26,7 +24,7 @@ service_type_schema = ServiceTypeSchema()
         
 
 
-class MedicalRecordSchema(Schema):
+class MedicalRecordSchema(ma.Schema):
     id = fields.Integer(dump_only=True)
     service_date = fields.Date(required=True)
     category_id = fields.Integer(required=True)
@@ -38,7 +36,6 @@ class MedicalRecordSchema(Schema):
 
     category = fields.Nested('CategorySchema', dump_only=True)
     service_type = fields.Nested('ServiceTypeSchema', dump_only=True)
-
     class Meta:
         fields = (
             "id", "service_date", "category_id", "service_type_id", 
