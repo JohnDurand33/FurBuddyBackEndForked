@@ -7,7 +7,6 @@ from flask_mail import Mail
 from config import DevelopmentConfig
 from database import db
 from models.schemas import ma
-
 from models.dogOwner import DogOwner
 from models.profile import Profile
 from models.medicalRecord import MedicalRecord
@@ -18,8 +17,7 @@ from routes.medicalRecordBP import medical_record_blueprint
 # from routes.eventBP import event_blueprint
 
 
-
-load_dotenv()
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
 
 cache = Cache()
 mail = Mail()
@@ -33,6 +31,7 @@ def create_app(config_name='DevelopmentConfig'):
     db.init_app(app)
     ma.init_app(app)
     # mail.init_app(app)
+    
     cache.init_app(app)
     
 # def blueprint_config(app):
@@ -49,12 +48,10 @@ def create_app(config_name='DevelopmentConfig'):
     with app.app_context():
         # db.drop_all()
         db.create_all()
-        
-        
+
     return app
     
     
 if __name__ == '__main__':
     app = create_app()
-    
-app.run()
+    app.run()

@@ -16,6 +16,7 @@ category_schema = CategorySchema()
 class ServiceTypeSchema(ma.Schema):
     id = fields.Int(dump_only=True)
     service_type_name = fields.Str(required=True)
+
     class Meta:
         fields = ("id", "service_type_name")
         

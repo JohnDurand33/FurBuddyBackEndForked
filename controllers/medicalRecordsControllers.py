@@ -72,7 +72,6 @@ def add_medical_record(current_owner_id, profile_id):
         new_record = create_medical_record(current_owner_id, data)
         result = medical_record_schema.dump(new_record)
         return jsonify({'message': 'Record added successfully', 'record': result}), 201
-
     except ValueError as ve:
         return jsonify({'message': str(ve)}), 400
     except SQLAlchemyError as e:
@@ -100,7 +99,9 @@ def get_medical_record(current_owner_id, profile_id, record_id):
             'fee': str(record.fee) if record.fee else None,
             'image_path': record.image_path,
             'profile_id': record.profile_id,
-            'profile_name': record.profile.name if record.profile else None  
+            'profile_name': record.profile.name if record.profile else None  ,
+            'service_type_id': record.service_type_id,
+            'category_id': record.category_id
         }
 
         return jsonify(response_data)
@@ -117,7 +118,6 @@ def get_medical_record(current_owner_id, profile_id, record_id):
 @token_required
 def edit_medical_record(current_owner_id, profile_id, record_id):
     json_data = request.get_json()
-
     try:
         data = medical_record_schema.load(json_data, partial=True)
     except ValidationError as err:
@@ -125,7 +125,6 @@ def edit_medical_record(current_owner_id, profile_id, record_id):
 
     try:
         updated_record = update_medical_record(current_owner_id, profile_id, record_id, data)
-        
         result = {
             'service_date': updated_record.service_date,
             'category_name': updated_record.category.category_name if updated_record.category else None,
@@ -136,7 +135,6 @@ def edit_medical_record(current_owner_id, profile_id, record_id):
             'profile_id': updated_record.profile_id
         }
         return jsonify({'message': 'Record updated successfully', 'record': result})
-
     except ValueError as ve:
         return jsonify({'message': str(ve)}), 400
     except SQLAlchemyError as e:
