@@ -13,7 +13,7 @@ class EventSchema(ma.Schema):
     
 
     class Meta:
-        fields = ("id", "name", "location_street", "zip_code", "state", "start_time", "end_time", "notes")
+        fields = ("id", "name", "street", "zip_code", "state", "start_time", "end_time", "notes")
         
 event_schema = EventSchema()
 events_schema = EventSchema(many=True)
