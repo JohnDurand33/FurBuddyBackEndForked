@@ -15,6 +15,8 @@ from routes.dogOwnerBP import dog_owner_blueprint
 from routes.profileBP import profile_blueprint
 from routes.medicalRecordBP import medical_record_blueprint
 from routes.eventBP import event_blueprint
+from routes.testBP import test_blueprint
+from reminders.reminderScheduler import start_reminder_scheduler
 
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
@@ -30,8 +32,7 @@ def create_app(config_name='DevelopmentConfig'):
     
     db.init_app(app)
     ma.init_app(app)
-    # mail.init_app(app)
-    
+    mail.init_app(app)
     cache.init_app(app)
     
 # def blueprint_config(app):
@@ -42,16 +43,20 @@ def create_app(config_name='DevelopmentConfig'):
     app.register_blueprint(profile_blueprint, url_prefix='/profile')
     app.register_blueprint(medical_record_blueprint, url_prefix='/medical_record')
     app.register_blueprint(event_blueprint, url_prefix='/event')
+    app.register_blueprint(test_blueprint, url_prefix='/test')
+
     
     # blueprint_config(app)
 
     with app.app_context():
         # db.drop_all()
         db.create_all()
+        
+    start_reminder_scheduler(app)
 
     return app
-    
-    
+
+       
 if __name__ == '__main__':
     app = create_app()
     app.run()
