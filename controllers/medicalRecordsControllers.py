@@ -23,6 +23,14 @@ def get_categories():
         return jsonify(result)
     except SQLAlchemyError as e:
         return jsonify({'message': str(e)}), 500
+    except ValidationError as err:
+        # Log the validation error
+        print(f"Validation Error: {err.messages}")
+        return jsonify({"message": err.messages}), 400
+    except Exception as e:
+        # Log general exceptions
+        print(f"Exception: {str(e)}")
+        return jsonify({"message": "Something went wrong"}), 400
     
 
 @handle_options
@@ -112,7 +120,7 @@ def get_medical_record(current_owner_id, profile_id, record_id):
     except Exception as e:
         return jsonify({'message': str(e)}), 500
     
- 
+
 
 @handle_options
 @token_required

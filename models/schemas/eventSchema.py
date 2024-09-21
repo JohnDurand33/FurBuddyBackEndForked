@@ -10,10 +10,12 @@ class EventSchema(ma.Schema):
     start_time = fields.DateTime(format='%Y-%m-%dT%H:%M:%S', required=True)
     end_time = fields.DateTime(format='%Y-%m-%dT%H:%M:%S', required=True)
     notes = fields.String(allow_none=True)
+    color_id = fields.Integer(required=True)
     
 
     class Meta:
-        fields = ("id", "name", "street", "zip_code", "state", "start_time", "end_time", "notes")
+        fields = ("id", "name", "street", "zip_code", "state",
+                  "start_time", "end_time", "notes", "color_id")
         
 event_schema = EventSchema()
 events_schema = EventSchema(many=True)
