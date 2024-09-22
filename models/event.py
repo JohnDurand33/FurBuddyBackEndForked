@@ -17,7 +17,6 @@ class Event(db.Model):
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
     notes = db.Column(db.Text, nullable=True)
-    color_id = db.Column(db.String(2), nullable=True) 
     owner_id = db.Column(db.Integer, db.ForeignKey('Owner.id'), nullable=False)  
 
     owner = db.relationship('DogOwner', backref=db.backref('events', lazy=True))

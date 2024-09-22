@@ -4,7 +4,7 @@ from flask import Flask
 from flask_caching import Cache
 from flask_cors import CORS 
 from flask_mail import Mail
-from config import DevelopmentConfig
+from config import DevelopmentConfig, db, migrate
 from database import db
 from models.schemas import ma
 from models.dogOwner import DogOwner
@@ -25,17 +25,15 @@ cache = Cache()
 mail = Mail()
 
 def create_app(config_name='DevelopmentConfig'):
-    
     app = Flask(__name__)
-
     app.config.from_object(f'config.{config_name}')
     
     db.init_app(app)
+    migrate.init_app(app, db)
     ma.init_app(app)
     mail.init_app(app)
     cache.init_app(app)
     
-# def blueprint_config(app):
 
     CORS(app)
 
@@ -45,12 +43,17 @@ def create_app(config_name='DevelopmentConfig'):
     app.register_blueprint(event_blueprint, url_prefix='/event')
     app.register_blueprint(test_blueprint, url_prefix='/test')
 
-    
-    # blueprint_config(app)
 
     with app.app_context():
-        # db.drop_all()
-        db.create_all()
+        
+        # conn = DevelopmentConfig.create_db_connection()
+        # cursor = conn.cursor()
+        # cursor.close()
+        # conn.close()
+        # # db.drop_all()
+        # db.create_all()
+        
+        migrate.init_app(app, db)
         
     start_reminder_scheduler(app)
 
