@@ -14,6 +14,7 @@ def create_new_event(current_owner_id, data):
         start_time=data['start_time'],
         end_time=data['end_time'],
         notes=data.get('notes'),
+        color_id=data['color_id'],
         owner_id=current_owner_id  
     )
     db.session.add(event)
@@ -35,12 +36,15 @@ def get_event_by_id(current_owner_id, event_id):
 
 
 def update_event_by_id(current_owner_id, event_id, data):
+    print('in service route')
     event = Event.query.get(event_id)
+    print('updated query', event)
     if event.owner_id != current_owner_id:
         return None
     
     for key, value in data.items():
         setattr(event, key, value)
+        print(key, value)
     db.session.commit()
     return {
         "message": "Event updated successfully",
