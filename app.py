@@ -37,7 +37,13 @@ def create_app(config_name='DevelopmentConfig'):
     
 # def blueprint_config(app):
 
-    CORS(app)
+    CORS(app, resources={r"/*": {"origins": "*"}},
+        supports_credentials=True,
+        methods=["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+        allow_headers=["Content-Type", "Authorization",
+                    "Access-Control-Allow-Credentials"]
+        )
+
 
     app.register_blueprint(dog_owner_blueprint, url_prefix='/owner')
     app.register_blueprint(profile_blueprint, url_prefix='/profile')
@@ -51,11 +57,8 @@ def create_app(config_name='DevelopmentConfig'):
     with app.app_context():
         # db.drop_all()
         db.create_all()
-        
-    start_reminder_scheduler(app)
 
     return app
-
        
 if __name__ == '__main__':
     app = create_app()

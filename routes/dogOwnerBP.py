@@ -4,8 +4,8 @@ from controllers.dogOwnerControllers import save, login, show_owner_info, update
 dog_owner_blueprint = Blueprint('owner_bp', __name__)
 
 
-dog_owner_blueprint.route('/', methods=['POST', 'OPTIONS'])(save)
-dog_owner_blueprint.route('/login', methods=['POST', 'OPTIONS'])(login)
-dog_owner_blueprint.route('/owners/current', methods=['GET', 'OPTIONS'])(show_owner_info)
-dog_owner_blueprint.route('/owners/current', methods=['PUT', 'OPTIONS'])(update_owner)
-dog_owner_blueprint.route('/owners/current', methods=['DELETE', 'OPTIONS'])(delete_owner)
+dog_owner_blueprint.route('/', methods=['POST'])(save)
+dog_owner_blueprint.route('/login', methods=['POST'])(login)
+dog_owner_blueprint.route('/owners/current', methods=['GET'])(show_owner_info)
+dog_owner_blueprint.route('/owners/current', methods=['PUT'])(update_owner)
+dog_owner_blueprint.route('/owners/current', methods=['DELETE'])(delete_owner)
