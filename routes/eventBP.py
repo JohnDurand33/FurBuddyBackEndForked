@@ -3,10 +3,10 @@ from controllers.eventControllers import create_event, get_event, get_events, up
 
 event_blueprint = Blueprint('event_bp', __name__)
 
-event_blueprint.route('/', methods=['POST', 'OPTIONS'])(create_event)
-event_blueprint.route('/<int:event_id>', methods=['GET', 'OPTIONS'])(get_event)
+event_blueprint.route('/', methods=['POST'])(create_event)
+event_blueprint.route('/<int:event_id>', methods=['GET'])(get_event)
 event_blueprint.route(
-    '/<int:event_id>', methods=['PUT', 'OPTIONS'])(update_event)
+    '/<int:event_id>', methods=['PUT'])(update_event)
 event_blueprint.route(
-    '/<int:event_id>', methods=['DELETE', 'OPTIONS'])(delete_event)
-event_blueprint.route('/events', methods=['GET', 'OPTIONS'])(get_events)
+    '/<int:event_id>', methods=['DELETE'])(delete_event)
+event_blueprint.route('/events', methods=['GET'])(get_events)

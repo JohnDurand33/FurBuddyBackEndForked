@@ -14,6 +14,7 @@ def create_new_event(current_owner_id, data):
         start_time=data['start_time'],
         end_time=data['end_time'],
         notes=data.get('notes'),
+        color_id=data.get('color_id'),
         owner_id=current_owner_id  
     )
     db.session.add(event)
