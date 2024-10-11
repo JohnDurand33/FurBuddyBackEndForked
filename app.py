@@ -60,6 +60,4 @@ def create_app(config_name='DevelopmentConfig'):
 
     return app
        
-if __name__ == '__main__':
-    app = create_app()
-    app.run()
+app = create_app()
