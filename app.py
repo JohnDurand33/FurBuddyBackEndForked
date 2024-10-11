@@ -17,10 +17,12 @@ from routes.medicalRecordBP import medical_record_blueprint
 from routes.eventBP import event_blueprint
 from routes.testBP import test_blueprint
 from reminders.reminderScheduler import start_reminder_scheduler
+from flask_migrate import Migrate
 
 
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
 
+migrate = Migrate()
 cache = Cache()
 mail = Mail()
 
@@ -34,6 +36,8 @@ def create_app(config_name='DevelopmentConfig'):
     ma.init_app(app)
     mail.init_app(app)
     cache.init_app(app)
+
+    migrate.init_app(app, db)
     
 # def blueprint_config(app):
 
@@ -51,13 +55,6 @@ def create_app(config_name='DevelopmentConfig'):
     app.register_blueprint(event_blueprint, url_prefix='/event')
     app.register_blueprint(test_blueprint, url_prefix='/test')
 
-    
-    # blueprint_config(app)
-
-    with app.app_context():
-        # db.drop_all()
-        db.create_all()
-
     return app
-       
+
 app = create_app()

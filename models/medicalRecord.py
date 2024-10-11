@@ -27,7 +27,7 @@ class ServiceType(db.Model):
 class MedicalRecord(db.Model):
     __tablename__ = 'MedicalRecord'
     
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     service_date = db.Column(db.Date, nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('Category.id'), nullable=False)
     service_type_id = db.Column(db.Integer, db.ForeignKey('ServiceType.id'), nullable=False)

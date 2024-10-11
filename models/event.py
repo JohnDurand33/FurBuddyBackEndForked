@@ -9,7 +9,7 @@ from sqlalchemy import Integer, ForeignKey, String, DateTime
 class Event(db.Model):
     __tablename__ = 'Event'
     
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     street = db.Column(db.String(255), nullable=True)
     zip_code = db.Column(db.String(20), nullable=True)
