@@ -43,8 +43,13 @@ def handle_options(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if request.method == 'OPTIONS':
-            return jsonify({'message': 'CORS preflight request'}), 200
+            response = jsonify({'message': 'CORS preflight request'})
+            # Adjust to allow specific origins if necessary
+            response.headers['Access-Control-Allow-Origin'] = '*'
+            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+            # If using cookies or authentication
+            response.headers['Access-Control-Allow-Credentials'] = 'true'
+            return response, 200
         return f(*args, **kwargs)
     return decorated_function
-
-

@@ -23,6 +23,14 @@ def get_categories():
         return jsonify(result)
     except SQLAlchemyError as e:
         return jsonify({'message': str(e)}), 500
+    except ValidationError as err:
+        # Log the validation error
+        print(f"Validation Error: {err.messages}")
+        return jsonify({"message": err.messages}), 400
+    except Exception as e:
+        # Log general exceptions
+        print(f"Exception: {str(e)}")
+        return jsonify({"message": "Something went wrong"}), 400
     
 
 @handle_options
@@ -112,7 +120,7 @@ def get_medical_record(current_owner_id, profile_id, record_id):
     except Exception as e:
         return jsonify({'message': str(e)}), 500
     
- 
+
 
 @handle_options
 @token_required
@@ -159,34 +167,6 @@ def delete_medical_record(current_owner_id, profile_id, record_id):
         return jsonify({'message': str(e)}), 500
     
     
-
-# @handle_options
-# @token_required
-# def get_medical_records(current_owner_id, profile_id):
-#     try:
-#         records = db.session.query(MedicalRecord).join(Category).join(ServiceType).filter(MedicalRecord.profile_id == profile_id).all()
-#         profile = db.session.query(Profile).filter(Profile.id == profile_id).first()
-#         if not profile or profile.owner_id != current_owner_id:
-#             return jsonify({'message': 'Unauthorized access to this profile'}), 403
-        
-#         result = []
-#         for record in records:
-#             result.append({
-#                 'id': record.id,
-#                 'service_date': record.service_date,
-#                 'category_name': record.category.category_name if record.category else None,
-#                 'service_type_name': record.service_type.service_type_name if record.service_type else None,
-#                 'follow_up_date': record.follow_up_date,
-#                 'fee': str(record.fee) if record.fee else None,
-#                 'image_path': record.image_path,
-#                 'profile_id': record.profile_id
-#             })
-#         return jsonify(result)
-
-#     except SQLAlchemyError as e:
-#         return jsonify({'message': str(e)}), 500
-#     except Exception as e:
-#         return jsonify({'message': str(e)}), 500
 
     
 @handle_options

@@ -34,6 +34,7 @@ def login(owner_email, password):
 
 
 def save(owner_data):
+    print('Inservice')
     hashed_password = hash_password(owner_data['password'])
     new_owner = DogOwner(
         password=hashed_password,
@@ -43,8 +44,8 @@ def save(owner_data):
     )
     db.session.add(new_owner)
     db.session.commit()
-
     db.session.refresh(new_owner)
+    print('Usercreated')
     return new_owner
 
 

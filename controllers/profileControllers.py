@@ -13,7 +13,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from utils.util import token_required, handle_options
 
 
-@handle_options
+
 @token_required
 def save_profile(current_owner_id):
     try:
@@ -30,7 +30,6 @@ def save_profile(current_owner_id):
         return jsonify({'error': str(e)}), 500
     
 
-@handle_options
 @token_required
 def find_by_id(current_owner_id, profile_id):
     try:
@@ -60,7 +59,7 @@ def find_by_id(current_owner_id, profile_id):
         return jsonify({"message": str(e)}), 404
     
     
-@handle_options
+
 @token_required
 def find_all(current_owner_id):
     try:
@@ -71,12 +70,13 @@ def find_all(current_owner_id):
         return jsonify(profiles), 200
     
     except ValueError as e:
+        print(e)
         return jsonify({'error': str(e)}), 400
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 
-@handle_options
+
 @token_required
 def update_profile_info(current_owner_id, profile_id):
     profile_data = request.json
@@ -93,7 +93,7 @@ def update_profile_info(current_owner_id, profile_id):
 
 
 
-@handle_options
+
 @token_required
 def delete_profile_info(current_owner_id, profile_id):
     try:

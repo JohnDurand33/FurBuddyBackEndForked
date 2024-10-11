@@ -8,7 +8,7 @@ from utils.util import token_required, handle_options
 
 
 
-@handle_options
+
 def login():
     try:
         credentials = request.json
@@ -17,6 +17,7 @@ def login():
         
         token = dogOwnerService.login(owner_email, password)
     except KeyError:
+        print(KeyError)
         return jsonify({'messages': 'Invalid payload, expecting user email and password'}), 401
     
     if token:
@@ -25,26 +26,28 @@ def login():
         return jsonify({'messages': "Invalid user email or password"}), 401
     
 
-@handle_options
 def save(): 
+    print('In controller') 
+    print('Request JSON:', request.json)
     try:
         owner_data = dog_owner_schema.load(request.json)
     except ValidationError as e:
         return jsonify(e.messages), 400
-    
+    print('schema pulled')
     try:
         owner_saved = dogOwnerService.save(owner_data)
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-    
+    print('owner saved')
     response = {
         "message": "Account was successfully created",
         "owner": dog_owner_schema.dump(owner_saved)
     }
+    print('response completed')
     return jsonify(response), 201
 
 
-@handle_options
+
 @token_required
 def show_owner_info(current_owner_id):
     try:
@@ -70,7 +73,7 @@ def show_owner_info(current_owner_id):
     
 
 
-@handle_options
+
 @token_required
 def update_owner(current_owner_id):
     try:
@@ -85,7 +88,7 @@ def update_owner(current_owner_id):
         return jsonify({"error": str(e)}), 500
 
 
-@handle_options
+
 @token_required
 def delete_owner(current_owner_id):
     print(f"Attempting to delete owner with ID: {current_owner_id}") 

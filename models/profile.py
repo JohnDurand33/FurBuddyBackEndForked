@@ -7,7 +7,7 @@ from sqlalchemy import Integer, ForeignKey
 class Profile(db.Model):
     __tablename__ = 'Profile'
     
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     date_of_birth = db.Column(db.Date, nullable=True)
     sex = db.Column(db.String(20), nullable=True)

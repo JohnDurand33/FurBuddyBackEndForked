@@ -127,41 +127,7 @@ def delete_medical_record_by_id(current_owner_id, profile_id, record_id):
     except Exception as e:
         raise ValueError(f"Error: {str(e)}")
     
-    
-# def get_paginated_records(page, limit, offset, profile_id=None):
-#     try:
-#         # Calculate offset based on page and limit
-#         if page is not None and limit is not None:
-#             offset = (page - 1) * limit
-        
-#         # Build the base query
-#         query = db.session.query(MedicalRecord).join(Category).join(ServiceType).filter(MedicalRecord.profile_id == profile_id)
-
-#         # Apply pagination
-#         records = query.offset(offset).limit(limit).all()
-
-#         # Format the result
-#         result = []
-#         for record in records:
-#             result.append({
-#                 'id': record.id,
-#                 'service_date': record.service_date,
-#                 'category_name': record.category.category_name if record.category else None,
-#                 'service_type_name': record.service_type.service_type_name if record.service_type else None,
-#                 'follow_up_date': record.follow_up_date,
-#                 'fee': str(record.fee) if record.fee else None,
-#                 'image_path': record.image_path,
-#                 'profile_id': record.profile_id
-#             })
-
-#         return result
-
-#     except SQLAlchemyError as e:
-#         raise RuntimeError(f"Database error: {str(e)}")
-#     except Exception as e:
-#         raise RuntimeError(f"Error: {str(e)}")
-
-     
+         
 
 def get_paginated_records(page, limit, offset, profile_id=None):
     try:
