@@ -7,15 +7,7 @@ from sqlalchemy import select, delete
 from utils.util import encode_token
 from utils.util import handle_options
 from sqlalchemy.exc import SQLAlchemyError
-
-
-def hash_password(password):
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-
-def check_password(hashed_password, password):
-    if isinstance(hashed_password, str):
-        hashed_password = hashed_password.encode('utf-8')
-    return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 
@@ -23,7 +15,7 @@ def login(owner_email, password):
     query = select(DogOwner).where(DogOwner.owner_email == owner_email)
     owner = db.session.execute(query).scalar_one_or_none()
 
-    if owner and check_password(owner.password, password):
+    if owner and check_password_hash(owner.password, password):
         auth_token = encode_token(owner.id)
         return {
             "status": "success",
@@ -35,7 +27,7 @@ def login(owner_email, password):
 
 def save(owner_data):
     print('Inservice')
-    hashed_password = hash_password(owner_data['password'])
+    hashed_password = generate_password_hash(owner_data['password'])
     new_owner = DogOwner(
         password=hashed_password,
         owner_email=owner_data['owner_email'],
